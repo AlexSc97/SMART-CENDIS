@@ -6,224 +6,312 @@
   <title>SMART CENDIS — Sistema de Gestión Hospitalaria</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <style>
+    /* ── PALETA DE COLORES INSTITUCIONAL (100% Opaca y Sólida) ── */
+    :root {
+      --background: #f1f5f9;         /* Slate-100: fondo limpio, suave y contrastado */
+      --foreground: #0f172a;         /* Slate-900: texto principal de máxima legibilidad */
+      --card: #ffffff;               /* Blanco puro 100% opaco */
+      --card-foreground: #0f172a;
+      --sidebar: #ffffff;            /* Sidebar blanco sólido */
+      --sidebar-foreground: #1e293b;
+      --border: #cbd5e1;             /* Slate-300: bordes definidos y visibles */
+      --primary: #0284c7;            /* Sky-600: azul clínico institucional */
+      --primary-foreground: #ffffff;
+      --secondary: #f8fafc;          /* Slate-50 */
+      --secondary-foreground: #1e293b;
+      --muted: #f1f5f9;
+      --muted-foreground: #475569;   /* Slate-600: texto secundario nítido */
+      --accent: #e0f2fe;             /* Sky-100 */
+      --accent-foreground: #0369a1;
+    }
+
     /* ── Transiciones y animaciones ── */
-    .fade-in { animation: fadeIn 0.25s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    .fade-in { animation: fadeIn 0.22s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
     .slide-in { animation: slideIn 0.2s ease; }
     @keyframes slideIn { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
 
     /* ── Sidebar nav item ── */
-    .nav-item { transition: background 0.15s, border-color 0.15s, color 0.15s; }
+    .nav-item { transition: background 0.15s, border-color 0.15s, color 0.15s; color: #334155; }
     .nav-item.active {
-      background: var(--primary);
-      color: var(--primary-foreground);
-      border-left: 3px solid color-mix(in srgb, var(--primary) 60%, white);
+      background: #0284c7 !important;
+      color: #ffffff !important;
+      font-weight: 600;
     }
-    .nav-item:not(.active):hover { background: color-mix(in srgb, var(--primary) 12%, transparent); }
+    .nav-item:not(.active):hover { background: #f1f5f9; color: #0284c7; }
 
-    /* ── KPI card ── */
-    .kpi-card { transition: transform 0.15s, box-shadow 0.15s; }
-    .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px color-mix(in srgb, var(--primary) 15%, transparent); }
+    /* ── Tarjetas sólidas ── */
+    .kpi-card {
+      background: #ffffff !important;
+      border: 1px solid #cbd5e1 !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(2, 132, 199, 0.12);
+    }
 
-    /* ── Table ── */
-    .sc-table thead { background: color-mix(in srgb, var(--primary) 8%, transparent); }
-    .sc-table tbody tr { transition: background 0.1s; border-bottom: 1px solid var(--border); }
-    .sc-table tbody tr:hover { background: color-mix(in srgb, var(--primary) 5%, transparent); }
+    /* ── Tablas de alta legibilidad ── */
+    .sc-table thead { background: #f8fafc; border-bottom: 2px solid #cbd5e1; }
+    .sc-table tbody tr { transition: background 0.1s; border-bottom: 1px solid #e2e8f0; background: #ffffff; }
+    .sc-table tbody tr:hover { background: #f0f9ff; }
 
-    /* ── Badge ── */
-    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; letter-spacing: 0.03em; }
-    .badge-green  { background: #dcfce7; color: #15803d; }
-    .badge-red    { background: #fee2e2; color: #b91c1c; }
-    .badge-yellow { background: #fef9c3; color: #854d0e; }
-    .badge-blue   { background: #dbeafe; color: #1d4ed8; }
-    .badge-gray   { background: color-mix(in srgb, var(--border) 60%, transparent); color: var(--muted-foreground); }
+    /* ── Badges de Estado ── */
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; letter-spacing: 0.02em; }
+    .badge-green  { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .badge-red    { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+    .badge-yellow { background: #fef9c3; color: #854d0e; border: 1px solid #fef08a; }
+    .badge-blue   { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+    .badge-purple { background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+    .badge-gray   { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
 
-    /* Dark-mode badge tweaks */
-    html.dark .badge-green  { background: #14532d; color: #86efac; }
-    html.dark .badge-red    { background: #450a0a; color: #fca5a5; }
-    html.dark .badge-yellow { background: #422006; color: #fde68a; }
-    html.dark .badge-blue   { background: #1e3a5f; color: #93c5fd; }
-
-    /* ── Input / Select ── */
+    /* ── Inputs y Formularios (100% Sólidos y Contrastados) ── */
     .sc-input {
       width: 100%;
-      background: var(--background);
-      border: 1px solid var(--border);
+      background: #ffffff !important;
+      border: 1.5px solid #cbd5e1 !important;
       border-radius: 8px;
-      padding: 8px 12px;
+      padding: 9px 13px;
       font-size: 14px;
-      color: var(--foreground);
+      color: #0f172a !important;
       outline: none;
       transition: border-color 0.15s, box-shadow 0.15s;
     }
-    .sc-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent); }
-    .sc-input.error { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,0.15); }
+    .sc-input:focus {
+      border-color: #0284c7 !important;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2) !important;
+    }
+    .sc-input.error {
+      border-color: #ef4444 !important;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
+    }
 
-    /* ── Button ── */
-    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.15s, transform 0.1s; border: none; }
+    /* ── Botones ── */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.15s, transform 0.1s, box-shadow 0.15s; border: none; }
     .btn:active { transform: scale(0.97); }
-    .btn-primary { background: var(--primary); color: var(--primary-foreground); }
-    .btn-primary:hover { opacity: 0.88; }
-    .btn-secondary { background: color-mix(in srgb, var(--border) 70%, transparent); color: var(--foreground); }
-    .btn-secondary:hover { opacity: 0.78; }
-    .btn-danger  { background: #ef4444; color: #fff; }
-    .btn-danger:hover { opacity: 0.85; }
-    .btn-success { background: #16a34a; color: #fff; }
-    .btn-success:hover { opacity: 0.85; }
-    .btn-sm { padding: 5px 12px; font-size: 13px; border-radius: 6px; }
+    .btn-primary { background: #0284c7; color: #ffffff; box-shadow: 0 1px 2px rgba(2, 132, 199, 0.25); }
+    .btn-primary:hover { background: #0369a1; }
+    .btn-secondary { background: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1; }
+    .btn-secondary:hover { background: #e2e8f0; }
+    .btn-danger  { background: #ef4444; color: #ffffff; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-success { background: #16a34a; color: #ffffff; }
+    .btn-success:hover { background: #15803d; }
+    .btn-purple  { background: #8b5cf6; color: #ffffff; }
+    .btn-purple:hover  { background: #7c3aed; }
+    .btn-sm { padding: 6px 12px; font-size: 13px; border-radius: 6px; }
 
-    /* ── Modal ── */
-    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(2px); z-index: 50; display: flex; align-items: center; justify-content: center; }
-    .modal-box { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; width: min(540px, 94vw); max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,0.3); animation: fadeIn 0.2s ease; }
+    /* ── MODALES TOTALMENTE SÓLIDOS Y OPACOS (Solución al problema de transparencia) ── */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.72) !important; /* Oscurecimiento nítido */
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-box {
+      background: #ffffff !important; /* BLANCO 100% OPACO */
+      color: #0f172a !important;
+      border: 1.5px solid #94a3b8 !important;
+      border-radius: 16px;
+      padding: 28px;
+      width: min(680px, 96vw);
+      max-height: 92vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.45), 0 0 0 1px rgba(0, 0, 0, 0.08) !important;
+      animation: fadeIn 0.2s ease;
+    }
 
-    /* ── Progress bar ── */
-    .progress-bar { height: 6px; border-radius: 999px; overflow: hidden; background: color-mix(in srgb, var(--border) 80%, transparent); }
+    /* ── Barra de Progreso ── */
+    .progress-bar { height: 7px; border-radius: 999px; overflow: hidden; background: #e2e8f0; }
     .progress-fill { height: 100%; border-radius: 999px; transition: width 0.4s ease; }
 
     /* ── Scrollbar ── */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
 
-    /* ── Toast ── */
-    #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 100; display: flex; flex-direction: column; gap: 8px; }
-    .toast { padding: 12px 18px; border-radius: 10px; font-size: 14px; font-weight: 500; max-width: 320px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); animation: slideIn 0.25s ease; }
-    .toast-success { background: #15803d; color: #fff; }
-    .toast-error   { background: #b91c1c; color: #fff; }
-    .toast-info    { background: var(--primary); color: var(--primary-foreground); }
+    /* ── Toasts ── */
+    #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1100; display: flex; flex-direction: column; gap: 8px; }
+    .toast { padding: 12px 18px; border-radius: 10px; font-size: 14px; font-weight: 500; max-width: 360px; box-shadow: 0 10px 25px rgba(0,0,0,0.18); animation: slideIn 0.25s ease; border: 1px solid rgba(255,255,255,0.2); }
+    .toast-success { background: #15803d; color: #ffffff; }
+    .toast-error   { background: #b91c1c; color: #ffffff; }
+    .toast-info    { background: #0284c7; color: #ffffff; }
 
-    /* ── Logo pulse ── */
-    .logo-dot { animation: pulse 2.4s ease-in-out infinite; }
-    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-    /* ── Section header ── */
-    .section-header { border-bottom: 2px solid color-mix(in srgb, var(--primary) 20%, transparent); padding-bottom: 12px; margin-bottom: 20px; }
-
-    /* ── Empty state ── */
-    .empty-state { text-align: center; padding: 48px 24px; color: var(--muted-foreground); }
-
-    /* ── Stat mini-chart bar ── */
-    .mini-bar { height: 3px; border-radius: 2px; }
+    /* ── Estilos de Impresión Oficial (@media print) ── */
+    @media print {
+      body, html { background: #ffffff !important; color: #000000 !important; }
+      #sidebar, header, #toast-container, .no-print, .btn, .modal-backdrop > *:not(.modal-box) {
+        display: none !important;
+      }
+      .modal-backdrop {
+        position: static !important;
+        background: transparent !important;
+        padding: 0 !important;
+        backdrop-filter: none !important;
+      }
+      .modal-box {
+        box-shadow: none !important;
+        border: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+      .print-page {
+        padding: 20px !important;
+        border: 2px solid #000000 !important;
+      }
+    }
   </style>
 </head>
-<body class="bg-[var(--background)] text-[var(--foreground)] antialiased" style="margin:0;padding:0;min-height:100vh;font-family:inherit;">
+<body class="bg-[#f1f5f9] text-[#0f172a] antialiased" style="margin:0;padding:0;min-height:100vh;">
 
 <!-- ═══════════════════════════════════════════════════
-     APP SHELL
+     ESTRUCTURA PRINCIPAL (APP SHELL)
 ══════════════════════════════════════════════════════ -->
 <div id="app" class="flex min-h-screen">
 
   <!-- ── SIDEBAR ── -->
-  <aside id="sidebar" class="w-64 shrink-0 flex flex-col border-r border-[var(--border)]" style="background:var(--sidebar,var(--card));min-height:100vh;">
+  <aside id="sidebar" class="w-64 shrink-0 flex flex-col border-r border-[#cbd5e1] bg-[#ffffff]" style="min-height:100vh;">
 
-    <!-- Logo -->
-    <div class="px-5 py-5 border-b border-[var(--border)]">
+    <!-- Logo Institucional -->
+    <div class="px-5 py-5 border-b border-[#cbd5e1]">
       <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:var(--primary);">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-foreground)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-[#0284c7] shadow-sm">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
           </svg>
         </div>
         <div>
-          <p class="font-bold text-sm leading-tight" style="color:var(--foreground);">SMART CENDIS</p>
-          <p class="text-xs" style="color:var(--muted-foreground);">Gestión Hospitalaria</p>
+          <p class="font-extrabold text-sm leading-tight text-[#0f172a] tracking-tight">SMART CENDIS</p>
+          <p class="text-xs text-[#64748b] font-medium">Gestión Hospitalaria</p>
         </div>
-        <span class="logo-dot ml-auto w-2 h-2 rounded-full bg-green-500 shrink-0"></span>
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0 ml-auto" title="Sistema en Línea"></span>
       </div>
     </div>
 
-    <!-- Nav -->
+    <!-- Navegación -->
     <nav class="flex-1 px-3 py-4 flex flex-col gap-1 overflow-y-auto">
-      <p class="px-2 text-xs font-semibold uppercase tracking-widest mb-2" style="color:var(--muted-foreground);">Principal</p>
+      <p class="px-2 text-xs font-bold uppercase tracking-wider mb-1 text-[#64748b]">Principal</p>
       <button onclick="goTo('dashboard')" class="nav-item active w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center gap-3" data-page="dashboard">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
         Dashboard
       </button>
 
-      <p class="px-2 text-xs font-semibold uppercase tracking-widest mt-4 mb-2" style="color:var(--muted-foreground);">Módulos</p>
-      <button onclick="goTo('medicamentos')" class="nav-item w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center gap-3" data-page="medicamentos">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        Medicamentos
+      <p class="px-2 text-xs font-bold uppercase tracking-wider mt-4 mb-1 text-[#64748b]">Flujo Piso → CENDIS</p>
+      <button onclick="goTo('solicitudes')" class="nav-item w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center gap-3" data-page="solicitudes">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        <span class="flex-1">Solicitudes de Piso</span>
       </button>
       <button onclick="goTo('pacientes')" class="nav-item w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center gap-3" data-page="pacientes">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        Pacientes
-      </button>
-      <button onclick="goTo('solicitudes')" class="nav-item w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center gap-3" data-page="solicitudes">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-        Solicitudes
-      </button>
-      <button onclick="goTo('inventario')" class="nav-item w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center gap-3" data-page="inventario">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-        Inventario
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Censo Pacientes
       </button>
 
-      <p class="px-2 text-xs font-semibold uppercase tracking-widest mt-4 mb-2" style="color:var(--muted-foreground);">Operaciones</p>
+      <p class="px-2 text-xs font-bold uppercase tracking-wider mt-4 mb-1 text-[#64748b]">Flujo CENDIS → Farmacia</p>
+      <button onclick="goTo('colectivos')" class="nav-item w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center gap-3" data-page="colectivos">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        <span class="flex-1">Pedidos Colectivos</span>
+        <span class="badge badge-purple text-[10px] px-1.5 py-0.5">Farmacia</span>
+      </button>
+
+      <p class="px-2 text-xs font-bold uppercase tracking-wider mt-4 mb-1 text-[#64748b]">Inventario & Dispensación</p>
+      <button onclick="goTo('medicamentos')" class="nav-item w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center gap-3" data-page="medicamentos">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Catálogo Medicamentos
+      </button>
+      <button onclick="goTo('inventario')" class="nav-item w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center gap-3" data-page="inventario">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Nivel de Stock CENDIS
+      </button>
       <button onclick="goTo('procesar')" class="nav-item w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center gap-3" data-page="procesar">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        Procesar Solicitud
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Dictamen de Farmacia
       </button>
       <button onclick="goTo('recepcion')" class="nav-item w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center gap-3" data-page="recepcion">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        Recepción Física
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Recepción Física en Piso
       </button>
     </nav>
 
-    <!-- Footer info -->
-    <div class="px-5 py-4 border-t border-[var(--border)]">
-      <p class="text-xs" style="color:var(--muted-foreground);">Etapa 3 — v3.0.0</p>
-      <p class="text-xs" style="color:var(--muted-foreground);">Sistema Hospitalario Digital</p>
+    <!-- Pie del Sidebar -->
+    <div class="px-5 py-4 border-t border-[#cbd5e1] bg-[#f8fafc]">
+      <p class="text-xs font-semibold text-[#0f172a]">SMART CENDIS v3.1</p>
+      <p class="text-xs text-[#64748b]">Etapa 3 — Auditoría & Colectivos</p>
     </div>
   </aside>
 
-  <!-- ── MAIN CONTENT ── -->
-  <main class="flex-1 flex flex-col overflow-hidden">
+  <!-- ── CONTENIDO PRINCIPAL ── -->
+  <main class="flex-1 flex flex-col overflow-hidden bg-[#f1f5f9]">
 
-    <!-- Top bar -->
-    <header class="flex items-center justify-between px-8 py-4 border-b border-[var(--border)]" style="background:var(--card);">
+    <!-- Barra Superior -->
+    <header class="flex items-center justify-between px-8 py-4 border-b border-[#cbd5e1] bg-[#ffffff] shadow-sm">
       <div>
-        <h1 id="page-title" class="text-lg font-bold" style="color:var(--foreground);">Dashboard</h1>
-        <p id="page-sub" class="text-sm" style="color:var(--muted-foreground);">Resumen del sistema en tiempo real</p>
+        <h1 id="page-title" class="text-lg font-bold text-[#0f172a]">Dashboard</h1>
+        <p id="page-sub" class="text-sm text-[#475569]">Resumen operativo en tiempo real</p>
       </div>
       <div class="flex items-center gap-3">
-        <span id="clock" class="text-sm font-mono" style="color:var(--muted-foreground);"></span>
-        <button onclick="resetData()" class="btn btn-secondary btn-sm">
+        <span id="clock" class="text-sm font-mono font-semibold px-3 py-1.5 rounded-lg bg-[#f8fafc] border border-[#cbd5e1] text-[#334155]"></span>
+        <button onclick="abrirGenerarColectivo()" class="btn btn-purple btn-sm shadow-sm" title="Generar Pedido Colectivo a Farmacia Central">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          Nuevo Colectivo
+        </button>
+        <button onclick="resetData()" class="btn btn-secondary btn-sm" title="Reiniciar datos de prueba">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
           Reiniciar
         </button>
       </div>
     </header>
 
-    <!-- Page content -->
+    <!-- Vista dinámica -->
     <div id="content" class="flex-1 overflow-y-auto p-8 fade-in"></div>
   </main>
 </div>
 
-<!-- ── MODAL ── -->
+<!-- ── MODAL UNIVERSAL TOTALMENTE SÓLIDO (100% OPACO) ── -->
 <div id="modal" class="modal-backdrop hidden" onclick="closeModalBackdrop(event)">
   <div class="modal-box" onclick="event.stopPropagation()">
-    <div class="flex items-center justify-between mb-5">
-      <h3 id="modal-title" class="text-base font-bold" style="color:var(--foreground);"></h3>
-      <button onclick="closeModal()" class="w-7 h-7 rounded-full flex items-center justify-center hover:opacity-70 transition-opacity" style="background:var(--border);">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    <div class="flex items-center justify-between pb-4 mb-5 border-b border-[#cbd5e1]">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-[#e0f2fe] flex items-center justify-center text-[#0284c7]">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <h3 id="modal-title" class="text-base font-bold text-[#0f172a]"></h3>
+      </div>
+      <button onclick="closeModal()" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-[#e2e8f0] text-[#64748b] hover:text-[#0f172a] transition-colors border border-[#cbd5e1]" title="Cerrar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
     <div id="modal-body"></div>
   </div>
 </div>
 
-<!-- ── TOAST CONTAINER ── -->
+<!-- ── CONTENEDOR DE NOTIFICACIONES TOAST ── -->
 <div id="toast-container"></div>
 
 <!-- ═══════════════════════════════════════════════════
-     APPLICATION LOGIC
+     LÓGICA JAVASCRIPT DEL SISTEMA
 ══════════════════════════════════════════════════════ -->
 <script>
 // ──────────────────────────────────────────────────
-//  STATE & PERSISTENCE
+//  ESTADO Y PERSISTENCIA (LOCALSTORAGE)
 // ──────────────────────────────────────────────────
-const STORAGE_KEY = 'smartcendis_v3';
+const STORAGE_KEY = 'smartcendis_v3_state';
+
+const CENDIS_SERVICES = [
+  "CENDIS 1 — Planta Baja (Urgencias / Pediatría)",
+  "CENDIS 2 — Planta Alta (Medicina Interna / Cirugía)",
+  "CENDIS 3 — Terapia Intensiva / Quirófanos",
+  "CENDIS 4 — Consulta Externa / Gineco-Obstetricia"
+];
 
 const INITIAL_STATE = {
   medicamentos: [
@@ -239,8 +327,10 @@ const INITIAL_STATE = {
     { servicio:'Medicina Interna', cama:'01', nombre:'Paciente de prueba 003', nss:'00000000003' },
     { servicio:'Urgencias',        cama:'01', nombre:'Paciente de prueba 004', nss:'00000000004' },
   ],
-  solicitudes: [],
-  contador: 1
+  solicitudes: [],   // Solicitudes de piso (Piso hospitalario -> CENDIS por paciente)
+  colectivos: [],    // Pedidos colectivos (CENDIS -> Farmacia Central global)
+  contador: 1,
+  contador_colectivos: 1
 };
 
 let state = loadState();
@@ -248,7 +338,12 @@ let state = loadState();
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (!parsed.colectivos) parsed.colectivos = [];
+      if (!parsed.contador_colectivos) parsed.contador_colectivos = 1;
+      return parsed;
+    }
   } catch(e) {}
   return JSON.parse(JSON.stringify(INITIAL_STATE));
 }
@@ -258,7 +353,7 @@ function saveState() {
 }
 
 function resetData() {
-  if (!confirm('¿Reiniciar todos los datos al estado inicial?')) return;
+  if (!confirm('¿Reiniciar todos los datos al estado institucional de prueba?')) return;
   state = JSON.parse(JSON.stringify(INITIAL_STATE));
   saveState();
   toast('Datos reiniciados correctamente.', 'success');
@@ -266,17 +361,18 @@ function resetData() {
 }
 
 // ──────────────────────────────────────────────────
-//  ROUTING
+//  RUTEO Y VISTAS
 // ──────────────────────────────────────────────────
 let currentPage = 'dashboard';
 const PAGE_TITLES = {
-  dashboard:    ['Dashboard', 'Resumen del sistema en tiempo real'],
-  medicamentos: ['Catálogo de Medicamentos', 'Gestión del inventario farmacológico'],
-  pacientes:    ['Consulta de Pacientes', 'Búsqueda por servicio y cama'],
-  solicitudes:  ['Solicitudes', 'Registro y seguimiento de solicitudes'],
-  inventario:   ['Inventario', 'Stock actual vs. objetivo'],
-  procesar:     ['Procesar Solicitud', 'Respuesta de farmacia'],
-  recepcion:    ['Recepción Física', 'Confirmar unidades recibidas'],
+  dashboard:    ['Dashboard General', 'Monitoreo hospitalario y balance de stock CENDIS'],
+  solicitudes:  ['Solicitudes de Piso (Piso → CENDIS)', 'Requerimientos de medicamentos por paciente desde servicios hospitalarios'],
+  colectivos:   ['Pedidos Colectivos (CENDIS → Farmacia Central)', 'Requisiciones institucionales de resurtido global de botiquín CENDIS'],
+  medicamentos: ['Catálogo de Medicamentos', 'Gestión institucional del censo de fármacos'],
+  pacientes:    ['Censo de Pacientes', 'Localización hospitalaria por servicio y cama'],
+  inventario:   ['Nivel de Stock CENDIS', 'Control de existencias físicas vs. metas de stock'],
+  procesar:     ['Dictamen de Farmacia', 'Resolución y surtimiento de solicitudes de piso'],
+  recepcion:    ['Recepción Física en Piso', 'Confirmación de entrega y actualización de existencias'],
 };
 
 function goTo(page) {
@@ -294,13 +390,13 @@ function renderPage(page) {
   const el = document.getElementById('content');
   el.innerHTML = '';
   el.className = 'flex-1 overflow-y-auto p-8 fade-in';
-  const fns = { dashboard, medicamentos, pacientes, solicitudes, inventario, procesar, recepcion };
+  const fns = { dashboard, solicitudes, colectivos, medicamentos, pacientes, inventario, procesar, recepcion };
   if (fns[page]) el.innerHTML = fns[page]();
   attachEvents(page);
 }
 
 // ──────────────────────────────────────────────────
-//  REGEX VALIDATION
+//  EXPRESIONES REGULARES DE VALIDACIÓN (Etapa 3)
 // ──────────────────────────────────────────────────
 const RE = {
   clave:        /^\d{4}$/,
@@ -315,29 +411,27 @@ const RE = {
   cantidadGe0:  /^(0|[1-9]\d*)$/,
   usuario:      /^[\w\s\.\-áéíóúüñÁÉÍÓÚÜÑ]{2,60}$/,
   folio:        /^SOL-\d{4,}$/,
+  folioCol:     /^COL-\d{4,}-\d+$/,
 };
-
-function validate(inputEl, pattern) {
-  const ok = pattern.test(inputEl.value.trim());
-  inputEl.classList.toggle('error', !ok);
-  return ok;
-}
 
 function fieldVal(id) { return document.getElementById(id)?.value.trim() || ''; }
 
 // ──────────────────────────────────────────────────
-//  HELPERS — UI
+//  COMPONENTES VISUALES
 // ──────────────────────────────────────────────────
 function badge(estado) {
   const map = {
-    PENDIENTE:      ['badge-yellow', '⏳ Pendiente'],
-    SURTIDA:        ['badge-green',  '✓ Surtida'],
-    SURTIDA_PARCIAL:['badge-blue',   '⚡ Parcial'],
-    NEGADA:         ['badge-red',    '✕ Negada'],
-    ACTIVO:         ['badge-green',  '● Activo'],
-    INACTIVO:       ['badge-gray',   '○ Inactivo'],
-    NORMAL:         ['badge-blue',   'Normal'],
-    URGENCIA:       ['badge-red',    '🚨 Urgencia'],
+    PENDIENTE:                  ['badge-yellow', '⏳ Pendiente CENDIS'],
+    SURTIDA:                    ['badge-green',  '✓ Surtida'],
+    SURTIDA_PARCIAL:            ['badge-blue',   '⚡ Parcial'],
+    NEGADA:                     ['badge-red',    '✕ Negada'],
+    ACTIVO:                     ['badge-green',  '● Activo'],
+    INACTIVO:                   ['badge-gray',   '○ Inactivo'],
+    NORMAL:                     ['badge-blue',   'Normal'],
+    URGENCIA:                   ['badge-red',    '🚨 Urgencia'],
+    TRANSMITIDO:                ['badge-purple', '📡 Transmitido a Farmacia'],
+    ENVIADO_FARMACIA:           ['badge-purple', '📡 En Cola de Farmacia'],
+    ENTREGADO_FARMACIA:         ['badge-green',  '📦 Recibido en CENDIS']
   };
   const [cls, label] = map[estado] || ['badge-gray', estado];
   return `<span class="badge ${cls}">${label}</span>`;
@@ -348,7 +442,7 @@ function toast(msg, type='info') {
   el.className = `toast toast-${type}`;
   el.textContent = msg;
   document.getElementById('toast-container').appendChild(el);
-  setTimeout(() => el.remove(), 3800);
+  setTimeout(() => el.remove(), 4000);
 }
 
 function openModal(title, bodyHTML) {
@@ -361,12 +455,15 @@ function closeModal() { document.getElementById('modal').classList.add('hidden')
 function closeModalBackdrop(e) { if (e.target.id === 'modal') closeModal(); }
 
 function emptyState(msg) {
-  return `<div class="empty-state"><svg class="mx-auto mb-3 opacity-30" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><p class="text-sm">${msg}</p></div>`;
+  return `<div class="text-center py-12 px-4 text-[#64748b] bg-[#ffffff] rounded-xl border border-[#cbd5e1]">
+    <svg class="mx-auto mb-3 opacity-30 text-[#0284c7]" width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <p class="text-sm font-medium">${msg}</p>
+  </div>`;
 }
 
 function inputRow(label, id, placeholder, type='text', extra='') {
   return `<div class="mb-4">
-    <label class="block text-sm font-medium mb-1.5" style="color:var(--foreground);">${label}</label>
+    <label class="block text-sm font-bold mb-1.5 text-[#0f172a]">${label}</label>
     <input type="${type}" id="${id}" placeholder="${placeholder}" class="sc-input" ${extra}>
   </div>`;
 }
@@ -374,13 +471,13 @@ function inputRow(label, id, placeholder, type='text', extra='') {
 function selectRow(label, id, options) {
   const opts = options.map(([v,l]) => `<option value="${v}">${l}</option>`).join('');
   return `<div class="mb-4">
-    <label class="block text-sm font-medium mb-1.5" style="color:var(--foreground);">${label}</label>
+    <label class="block text-sm font-bold mb-1.5 text-[#0f172a]">${label}</label>
     <select id="${id}" class="sc-input">${opts}</select>
   </div>`;
 }
 
 // ──────────────────────────────────────────────────
-//  CLOCK
+//  RELOJ
 // ──────────────────────────────────────────────────
 function updateClock() {
   const now = new Date();
@@ -391,55 +488,55 @@ setInterval(updateClock, 1000);
 updateClock();
 
 // ──────────────────────────────────────────────────
-//  DASHBOARD
+//  1. DASHBOARD
 // ──────────────────────────────────────────────────
 function dashboard() {
-  const meds     = state.medicamentos.filter(m => m.activo);
-  const pending  = state.solicitudes.filter(s => s.estado === 'PENDIENTE').length;
-  const surtidas = state.solicitudes.filter(s => s.estado === 'SURTIDA').length;
-  const alertas  = meds.filter(m => m.stock_actual < m.stock_objetivo * 0.3).length;
-  const total    = state.solicitudes.length;
+  const meds       = state.medicamentos.filter(m => m.activo);
+  const pending    = state.solicitudes.filter(s => s.estado === 'PENDIENTE').length;
+  const surtidas   = state.solicitudes.filter(s => s.estado === 'SURTIDA').length;
+  const alertas    = meds.filter(m => m.stock_actual < m.stock_objetivo * 0.3).length;
+  const colectivosTotal = state.colectivos.length;
 
-  // Recent solicitudes
   const recent = [...state.solicitudes].reverse().slice(0, 5);
 
   const kpis = [
-    { label:'Medicamentos Activos', value: meds.length, icon:'💊', color:'#3b82f6', sub:`de ${state.medicamentos.length} registrados` },
-    { label:'Solicitudes Pendientes', value: pending, icon:'⏳', color:'#f59e0b', sub:'Requieren respuesta de farmacia' },
-    { label:'Solicitudes Surtidas', value: surtidas, icon:'✓', color:'#16a34a', sub:`de ${total} totales` },
-    { label:'Alertas de Stock Bajo', value: alertas, icon:'⚠', color:'#ef4444', sub:'Stock < 30% del objetivo' },
+    { label:'Medicamentos Activos', value: meds.length, icon:'💊', color:'#0284c7', sub:`${state.medicamentos.length} registrados en catálogo` },
+    { label:'Solicitudes de Piso Pendientes', value: pending, icon:'⏳', color:'#f59e0b', sub:'Requerimientos de piso a CENDIS' },
+    { label:'Pedidos Colectivos Emitidos', value: colectivosTotal, icon:'📦', color:'#8b5cf6', sub:'CENDIS → Farmacia Central' },
+    { label:'Alertas de Stock Crítico', value: alertas, icon:'⚠', color:'#ef4444', sub:'Existencias < 30% del objetivo' },
   ];
 
   const kpiHtml = kpis.map(k => `
-    <div class="kpi-card rounded-2xl p-6 border border-[var(--border)] cursor-default" style="background:var(--card);">
+    <div class="kpi-card rounded-2xl p-6 border border-[#cbd5e1] cursor-default bg-[#ffffff]">
       <div class="flex items-start justify-between mb-3">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl" style="background:${k.color}22;">${k.icon}</div>
-        <span class="text-3xl font-bold" style="color:${k.color};">${k.value}</span>
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl font-bold" style="background:${k.color}15; color:${k.color};">${k.icon}</div>
+        <span class="text-3xl font-black tracking-tight" style="color:${k.color};">${k.value}</span>
       </div>
-      <p class="font-semibold text-sm" style="color:var(--foreground);">${k.label}</p>
-      <p class="text-xs mt-1" style="color:var(--muted-foreground);">${k.sub}</p>
+      <p class="font-bold text-sm text-[#0f172a]">${k.label}</p>
+      <p class="text-xs mt-1 text-[#64748b] font-medium">${k.sub}</p>
     </div>
   `).join('');
 
   const recentHtml = recent.length ? recent.map(s => `
     <tr>
-      <td class="py-3 px-4 font-mono text-sm">${s.folio}</td>
-      <td class="py-3 px-4 text-sm">${s.paciente}</td>
-      <td class="py-3 px-4 text-sm">${s.nombre_medicamento}</td>
+      <td class="py-3 px-4 font-mono font-bold text-sm text-[#0284c7]">${s.folio}</td>
+      <td class="py-3 px-4 text-sm font-medium text-[#0f172a]">${s.paciente} <span class="text-xs text-[#64748b]">(${s.servicio}/${s.cama})</span></td>
+      <td class="py-3 px-4 text-sm font-semibold">${s.nombre_medicamento}</td>
       <td class="py-3 px-4 text-sm">${badge(s.estado)}</td>
       <td class="py-3 px-4 text-sm">${badge(s.tipo)}</td>
     </tr>
-  `).join('') : `<tr><td colspan="5">${emptyState('No hay solicitudes registradas aún.')}</td></tr>`;
+  `).join('') : `<tr><td colspan="5">${emptyState('No hay solicitudes de piso registradas.')}</td></tr>`;
 
-  // Stock chart bars
-  const stockBars = meds.slice(0,6).map(m => {
+  // Barras de stock
+  const stockBars = meds.slice(0, 6).map(m => {
     const pct = m.stock_objetivo > 0 ? Math.min(100, Math.round(m.stock_actual / m.stock_objetivo * 100)) : 0;
     const color = pct < 30 ? '#ef4444' : pct < 70 ? '#f59e0b' : '#16a34a';
+    const faltante = Math.max(0, m.stock_objetivo - m.stock_actual);
     return `
-      <div class="mb-3">
-        <div class="flex justify-between text-xs mb-1">
-          <span style="color:var(--foreground);">${m.nombre.substring(0,22)}…</span>
-          <span style="color:var(--muted-foreground);">${m.stock_actual}/${m.stock_objetivo}</span>
+      <div class="mb-3.5 bg-[#f8fafc] p-2.5 rounded-xl border border-[#e2e8f0]">
+        <div class="flex justify-between text-xs mb-1.5">
+          <span class="font-bold text-[#0f172a]">${m.nombre}</span>
+          <span class="font-mono font-bold ${pct < 30 ? 'text-red-600' : 'text-slate-600'}">${m.stock_actual} / ${m.stock_objetivo} ${faltante > 0 ? `(-${faltante})` : ''}</span>
         </div>
         <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${color};"></div></div>
       </div>`;
@@ -449,47 +546,479 @@ function dashboard() {
     <div class="grid grid-cols-4 gap-5 mb-8">${kpiHtml}</div>
 
     <div class="grid grid-cols-3 gap-6">
-      <!-- Recent requests -->
-      <div class="col-span-2 rounded-2xl border border-[var(--border)] overflow-hidden" style="background:var(--card);">
-        <div class="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
-          <h3 class="font-semibold text-sm" style="color:var(--foreground);">Solicitudes Recientes</h3>
-          <button onclick="goTo('solicitudes')" class="text-xs" style="color:var(--primary);">Ver todas →</button>
+      <!-- Tabla de solicitudes recientes de piso -->
+      <div class="col-span-2 rounded-2xl border border-[#cbd5e1] overflow-hidden bg-[#ffffff] shadow-sm">
+        <div class="px-6 py-4 border-b border-[#cbd5e1] flex items-center justify-between bg-[#f8fafc]">
+          <div>
+            <h3 class="font-bold text-sm text-[#0f172a]">Solicitudes de Piso Recientes</h3>
+            <p class="text-xs text-[#64748b]">Requerimientos de servicios clínicos hacia CENDIS</p>
+          </div>
+          <button onclick="goTo('solicitudes')" class="btn btn-secondary btn-sm text-[#0284c7] font-bold">Ver todas →</button>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full sc-table">
             <thead><tr>
-              <th class="py-2.5 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Folio</th>
-              <th class="py-2.5 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Paciente</th>
-              <th class="py-2.5 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Medicamento</th>
-              <th class="py-2.5 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Estado</th>
-              <th class="py-2.5 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Tipo</th>
+              <th class="py-3 px-4 text-left text-xs font-bold text-[#475569]">Folio</th>
+              <th class="py-3 px-4 text-left text-xs font-bold text-[#475569]">Paciente / Cama</th>
+              <th class="py-3 px-4 text-left text-xs font-bold text-[#475569]">Medicamento</th>
+              <th class="py-3 px-4 text-left text-xs font-bold text-[#475569]">Estado</th>
+              <th class="py-3 px-4 text-left text-xs font-bold text-[#475569]">Prioridad</th>
             </tr></thead>
             <tbody>${recentHtml}</tbody>
           </table>
         </div>
       </div>
 
-      <!-- Stock chart -->
-      <div class="rounded-2xl border border-[var(--border)] p-6" style="background:var(--card);">
-        <h3 class="font-semibold text-sm mb-4 section-header" style="color:var(--foreground);">Nivel de Stock</h3>
-        ${stockBars || emptyState('Sin medicamentos activos.')}
-        <p class="text-xs mt-3" style="color:var(--muted-foreground);">🔴 &lt;30% · 🟡 30-70% · 🟢 &gt;70%</p>
+      <!-- Tarjeta de Nivel de Stock con Botón de Colectivo FUNCIONAL -->
+      <div class="rounded-2xl border border-[#cbd5e1] p-6 bg-[#ffffff] shadow-sm flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-3 pb-3 border-b border-[#cbd5e1]">
+            <div>
+              <h3 class="font-bold text-sm text-[#0f172a]">Nivel de Stock CENDIS</h3>
+              <p class="text-xs text-[#64748b]">Existencias del botiquín</p>
+            </div>
+            <!-- BOTÓN COLECTIVO DESTACADO -->
+            <button onclick="abrirGenerarColectivo()" class="btn btn-purple btn-sm shadow-sm font-bold" title="Generar Pedido Colectivo a Farmacia Central">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+              Pedir Colectivo
+            </button>
+          </div>
+          ${stockBars || emptyState('Sin medicamentos activos.')}
+        </div>
+        <div class="mt-4 pt-3 border-t border-[#e2e8f0] flex items-center justify-between text-xs text-[#64748b]">
+          <span>🔴 Crítico (&lt;30%)</span>
+          <span>🟡 Medio</span>
+          <span>🟢 Óptimo (&gt;70%)</span>
+        </div>
       </div>
     </div>`;
 }
 
 // ──────────────────────────────────────────────────
-//  MEDICAMENTOS
+//  2. SOLICITUDES DE PISO (Piso → CENDIS)
+// ──────────────────────────────────────────────────
+function solicitudes() {
+  const rows = [...state.solicitudes].reverse().map(s => `
+    <tr>
+      <td class="py-3.5 px-4 font-mono text-sm font-bold text-[#0284c7]">${s.folio}</td>
+      <td class="py-3.5 px-4 text-sm font-semibold text-[#0f172a]">${s.servicio} <span class="text-xs text-[#64748b]">Cama ${s.cama}</span></td>
+      <td class="py-3.5 px-4 text-sm font-medium text-[#0f172a]">${s.paciente} <p class="text-xs font-mono text-[#64748b]">NSS: ${s.nss}</p></td>
+      <td class="py-3.5 px-4 text-sm font-semibold">${s.nombre_medicamento}</td>
+      <td class="py-3.5 px-4 text-sm text-center font-bold text-[#0f172a]">${s.cantidad}</td>
+      <td class="py-3.5 px-4 text-sm text-center font-bold ${s.cantidad_recibida > 0 ? 'text-emerald-600' : 'text-slate-400'}">${s.cantidad_recibida}</td>
+      <td class="py-3.5 px-4">${badge(s.estado)}</td>
+      <td class="py-3.5 px-4">${badge(s.tipo)}</td>
+      <td class="py-3.5 px-4 text-sm font-mono text-[#64748b]">${s.turno}</td>
+    </tr>`).join('') || `<tr><td colspan="9">${emptyState('Sin solicitudes de piso registradas.')}</td></tr>`;
+
+  return `
+    <div class="bg-[#ffffff] p-5 rounded-2xl border border-[#cbd5e1] mb-6 shadow-sm flex items-center justify-between">
+      <div>
+        <div class="flex items-center gap-2">
+          <h2 class="text-lg font-black text-[#0f172a]">Solicitudes de Piso Hospitalario</h2>
+          <span class="badge badge-blue">Flujo: Piso → CENDIS</span>
+        </div>
+        <p class="text-sm text-[#475569] mt-0.5">Medicamentos e insumos solicitados desde camas clínicas individualizadas para suministro en CENDIS.</p>
+      </div>
+      <button onclick="abrirNuevaSolicitud()" class="btn btn-primary shadow-sm font-bold">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nueva Solicitud de Piso
+      </button>
+    </div>
+
+    <div class="rounded-2xl border border-[#cbd5e1] overflow-hidden bg-[#ffffff] shadow-sm">
+      <div class="overflow-x-auto">
+        <table class="w-full sc-table">
+          <thead><tr>
+            <th class="py-3.5 px-4 text-left text-xs font-bold text-[#475569]">Folio</th>
+            <th class="py-3.5 px-4 text-left text-xs font-bold text-[#475569]">Servicio / Cama</th>
+            <th class="py-3.5 px-4 text-left text-xs font-bold text-[#475569]">Paciente</th>
+            <th class="py-3.5 px-4 text-left text-xs font-bold text-[#475569]">Medicamento</th>
+            <th class="py-3.5 px-4 text-center text-xs font-bold text-[#475569]">Cant. Sol.</th>
+            <th class="py-3.5 px-4 text-center text-xs font-bold text-[#475569]">Cant. Rec.</th>
+            <th class="py-3.5 px-4 text-left text-xs font-bold text-[#475569]">Estado</th>
+            <th class="py-3.5 px-4 text-left text-xs font-bold text-[#475569]">Tipo</th>
+            <th class="py-3.5 px-4 text-left text-xs font-bold text-[#475569]">Turno</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+function abrirNuevaSolicitud() {
+  const medsActivos = state.medicamentos.filter(m => m.activo);
+  const medOpts = medsActivos.map(m => [m.clave, `${m.nombre} (${m.presentacion}) - Stock en CENDIS: ${m.stock_actual}`]);
+  const pacOpts = state.pacientes.map(p => [`${p.servicio}||${p.cama}`, `${p.nombre} — ${p.servicio} / Cama ${p.cama} (NSS: ${p.nss})`]);
+
+  openModal('Registrar Solicitud de Piso (Piso → CENDIS)', `
+    <div class="p-3 mb-4 rounded-xl bg-sky-50 border border-sky-200 text-xs text-sky-800">
+      <strong>Flujo Institucional:</strong> Esta solicitud se vincula a un paciente y cama hospitalaria para ser surtida por el personal de CENDIS.
+    </div>
+    ${selectRow('Paciente Hospitalizado (Servicio / Cama / NSS)', 'ns-pac', pacOpts)}
+    ${selectRow('Medicamento Solicitado', 'ns-med', medOpts)}
+    ${inputRow('Cantidad Solicitada (Entero > 0)', 'ns-cant', '1', 'number')}
+    ${selectRow('Turno Operativo', 'ns-turno', [['MATUTINO','Matutino'],['VESPERTINO','Vespertino'],['NOCTURNO','Nocturno']])}
+    ${inputRow('Personal de Enfermería / Responsable', 'ns-usuario', 'Enf. García L.')}
+    ${selectRow('Tipo de Requerimiento', 'ns-tipo', [['NORMAL','Normal (Tratamiento Ordinario)'],['URGENCIA','🚨 Urgencia Inmediata']])}
+    <div class="flex gap-3 mt-6 pt-4 border-t border-[#cbd5e1]">
+      <button onclick="guardarSolicitud()" class="btn btn-primary flex-1 font-bold">Registrar Solicitud</button>
+      <button onclick="closeModal()" class="btn btn-secondary">Cancelar</button>
+    </div>`);
+}
+
+function guardarSolicitud() {
+  const pacKey = fieldVal('ns-pac');
+  const medClave = fieldVal('ns-med');
+  const cant = fieldVal('ns-cant');
+  const turno = fieldVal('ns-turno');
+  const usuario = fieldVal('ns-usuario');
+  const tipo = fieldVal('ns-tipo');
+
+  let ok = true;
+  if (!RE.cantidadPos.test(cant)) { document.getElementById('ns-cant').classList.add('error'); ok=false; }
+  if (!RE.usuario.test(usuario))  { document.getElementById('ns-usuario').classList.add('error'); ok=false; }
+  if (!ok) { toast('Verifique los campos con formato inválido.', 'error'); return; }
+
+  const [serv, cama] = pacKey.split('||');
+  const pac = state.pacientes.find(p => p.servicio === serv && p.cama === cama);
+  const med = state.medicamentos.find(m => m.clave === medClave);
+  if (!pac || !med) { toast('Paciente o medicamento no localizado.', 'error'); return; }
+
+  const folio = `SOL-${String(state.contador).padStart(4,'0')}`;
+  state.contador++;
+  state.solicitudes.push({
+    folio, servicio: pac.servicio, cama: pac.cama,
+    paciente: pac.nombre, nss: pac.nss,
+    medicamento: med.clave, nombre_medicamento: med.nombre,
+    cantidad: parseInt(cant), cantidad_recibida: 0, cantidad_pendiente: parseInt(cant),
+    turno, usuario, tipo, estado: 'PENDIENTE'
+  });
+  saveState(); closeModal(); renderPage('solicitudes');
+  toast(`Solicitud de piso ${folio} registrada en CENDIS.`, 'success');
+}
+
+// ──────────────────────────────────────────────────
+//  3. PEDIDOS COLECTIVOS (CENDIS → Farmacia Central)
+// ──────────────────────────────────────────────────
+function colectivos() {
+  const rows = [...state.colectivos].reverse().map(c => `
+    <tr>
+      <td class="py-3.5 px-4 font-mono font-bold text-sm text-purple-700">${c.folio}</td>
+      <td class="py-3.5 px-4 text-sm font-bold text-[#0f172a]">${c.origen_cendis}</td>
+      <td class="py-3.5 px-4 text-sm font-medium text-[#475569]">${c.fecha_emision}</td>
+      <td class="py-3.5 px-4 text-sm text-[#0f172a]">${c.responsable} <span class="text-xs text-[#64748b]">(${c.turno})</span></td>
+      <td class="py-3.5 px-4 text-center font-bold text-sm">${c.items.length} claves</td>
+      <td class="py-3.5 px-4 text-center font-bold text-sm text-purple-800">${c.items.reduce((acc, i)=>acc+i.cantidad, 0)} uds.</td>
+      <td class="py-3.5 px-4">${badge(c.estado)}</td>
+      <td class="py-3.5 px-4">
+        <button onclick="verFormatoColectivo('${c.folio}')" class="btn btn-secondary btn-sm text-purple-700 font-bold border-purple-300 hover:bg-purple-50">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Ver / Imprimir
+        </button>
+      </td>
+    </tr>`).join('') || `<tr><td colspan="8">${emptyState('No se han generado pedidos colectivos hacia Farmacia Central.')}</td></tr>`;
+
+  return `
+    <div class="bg-[#ffffff] p-5 rounded-2xl border border-[#cbd5e1] mb-6 shadow-sm flex items-center justify-between">
+      <div>
+        <div class="flex items-center gap-2">
+          <h2 class="text-lg font-black text-[#0f172a]">Pedidos Colectivos de Insumos</h2>
+          <span class="badge badge-purple">Flujo: CENDIS → Farmacia Central</span>
+        </div>
+        <p class="text-sm text-[#475569] mt-0.5">Requisición periódica y global por botiquín CENDIS para resurtido en Farmacia Central (sin asociación a pacientes individuales).</p>
+      </div>
+      <button onclick="abrirGenerarColectivo()" class="btn btn-purple shadow-sm font-bold">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        Generar Nuevo Colectivo
+      </button>
+    </div>
+
+    <div class="rounded-2xl border border-[#cbd5e1] overflow-hidden bg-[#ffffff] shadow-sm">
+      <div class="overflow-x-auto">
+        <table class="w-full sc-table">
+          <thead><tr>
+            <th class="py-3.5 px-4 text-left text-xs font-bold text-[#475569]">Folio Colectivo</th>
+            <th class="py-3.5 px-4 text-left text-xs font-bold text-[#475569]">Servicio CENDIS Solicitante</th>
+            <th class="py-3.5 px-4 text-left text-xs font-bold text-[#475569]">Fecha / Hora</th>
+            <th class="py-3.5 px-4 text-left text-xs font-bold text-[#475569]">Responsable / Turno</th>
+            <th class="py-3.5 px-4 text-center text-xs font-bold text-[#475569]">Total Claves</th>
+            <th class="py-3.5 px-4 text-center text-xs font-bold text-[#475569]">Total Unidades</th>
+            <th class="py-3.5 px-4 text-left text-xs font-bold text-[#475569]">Estado</th>
+            <th class="py-3.5 px-4 text-left text-xs font-bold text-[#475569]">Formato Físico</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+// ── MODAL: GENERAR COLECTIVO A FARMACIA (Funcionalidad Nivel de Stock) ──
+function abrirGenerarColectivo() {
+  const cendisOpts = CENDIS_SERVICES.map(s => [s, s]);
+  const meds = state.medicamentos.filter(m => m.activo);
+
+  // Generar filas de medicamentos precalculando faltantes
+  const itemsRows = meds.map((m, idx) => {
+    const faltante = Math.max(0, m.stock_objetivo - m.stock_actual);
+    const sugerido = faltante > 0 ? faltante : 0;
+    return `
+      <tr class="border-b border-[#e2e8f0] hover:bg-purple-50/50">
+        <td class="py-2.5 px-3 font-mono font-bold text-xs text-[#0284c7]">${m.clave}</td>
+        <td class="py-2.5 px-3 text-xs font-bold text-[#0f172a]">${m.nombre} <span class="text-[#64748b] font-normal">(${m.presentacion})</span></td>
+        <td class="py-2.5 px-3 text-center text-xs font-mono font-bold ${m.stock_actual < m.stock_objetivo * 0.3 ? 'text-red-600' : 'text-slate-600'}">${m.stock_actual}</td>
+        <td class="py-2.5 px-3 text-center text-xs font-mono text-[#64748b]">${m.stock_objetivo}</td>
+        <td class="py-2.5 px-3 text-center text-xs font-bold ${faltante > 0 ? 'text-amber-600' : 'text-emerald-600'}">${faltante > 0 ? `-${faltante}` : 'Cubierto'}</td>
+        <td class="py-2.5 px-3 text-center">
+          <input type="number" id="col-cant-${m.clave}" min="0" value="${sugerido}" class="sc-input text-center font-bold text-xs !py-1 !px-2 !w-20 inline-block text-purple-700 border-purple-300">
+        </td>
+      </tr>`;
+  }).join('');
+
+  openModal('Generar Pedido Colectivo (CENDIS → Farmacia Central)', `
+    <div class="p-3 mb-4 rounded-xl bg-purple-50 border border-purple-200 text-xs text-purple-900 leading-relaxed">
+      <strong>📦 Resurtido General de CENDIS:</strong> Este formato consolida las necesidades del botiquín hospitalario para Farmacia Central. <em>No requiere datos de pacientes individuales</em>. Se registrará electrónicamente y se generará el <strong>Formato Oficial Imprimible</strong> requerido por normativa.
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mb-4">
+      ${selectRow('Punto CENDIS Solicitante', 'col-origen', cendisOpts)}
+      ${selectRow('Turno', 'col-turno', [['MATUTINO','Matutino'],['VESPERTINO','Vespertino'],['NOCTURNO','Nocturno']])}
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mb-4">
+      ${inputRow('Personal Responsable CENDIS', 'col-resp', 'L.E. Alejandro Sánchez - CENDIS PB')}
+      ${selectRow('Prioridad del Colectivo', 'col-prioridad', [['PROGRAMADO','Resurtido Periódico de Botiquín'],['CRITICO','Alerta de Stock Crítico (<30%)'],['URGENTE','Reposición Urgente']])}
+    </div>
+
+    <div class="mb-5">
+      <div class="flex items-center justify-between mb-2">
+        <label class="block text-xs font-bold uppercase tracking-wider text-[#0f172a]">Detalle de Insumos a Requerir de Farmacia Central:</label>
+        <span class="text-xs text-[#64748b]">Ajuste las cantidades según necesidad</span>
+      </div>
+      <div class="max-h-56 overflow-y-auto border border-[#cbd5e1] rounded-xl bg-[#ffffff]">
+        <table class="w-full text-left">
+          <thead class="bg-[#f8fafc] border-b border-[#cbd5e1] text-[11px] font-bold text-[#475569] uppercase sticky top-0">
+            <tr>
+              <th class="py-2 px-3">Clave</th>
+              <th class="py-2 px-3">Medicamento</th>
+              <th class="py-2 px-3 text-center">Stock CENDIS</th>
+              <th class="py-2 px-3 text-center">Objetivo</th>
+              <th class="py-2 px-3 text-center">Faltante</th>
+              <th class="py-2 px-3 text-center">Cant. a Pedir</th>
+            </tr>
+          </thead>
+          <tbody>${itemsRows}</tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="flex gap-3 pt-4 border-t border-[#cbd5e1]">
+      <button onclick="transmitirColectivo()" class="btn btn-purple flex-1 font-bold shadow-sm">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Transmitir y Generar Formato Oficial
+      </button>
+      <button onclick="closeModal()" class="btn btn-secondary">Cancelar</button>
+    </div>`);
+}
+
+function transmitirColectivo() {
+  const origen = fieldVal('col-origen');
+  const turno = fieldVal('col-turno');
+  const resp = fieldVal('col-resp');
+  const prioridad = fieldVal('col-prioridad');
+
+  if (!resp || resp.length < 3) {
+    toast('Ingrese el nombre del responsable de CENDIS.', 'error');
+    return;
+  }
+
+  // Recolectar items
+  const items = [];
+  state.medicamentos.filter(m => m.activo).forEach(m => {
+    const input = document.getElementById(`col-cant-${m.clave}`);
+    const cant = parseInt(input?.value || '0');
+    if (cant > 0) {
+      items.push({
+        clave: m.clave,
+        nombre: m.nombre,
+        presentacion: m.presentacion,
+        unidad_fisica: m.unidad_fisica,
+        stock_actual_cendis: m.stock_actual,
+        stock_objetivo: m.stock_objetivo,
+        cantidad: cant
+      });
+    }
+  });
+
+  if (items.length === 0) {
+    toast('Debe solicitar al menos una unidad de algún medicamento.', 'error');
+    return;
+  }
+
+  const year = new Date().getFullYear();
+  const folio = `COL-${year}-${String(state.contador_colectivos).padStart(4,'0')}`;
+  state.contador_colectivos++;
+
+  const nuevoColectivo = {
+    folio,
+    origen_cendis: origen,
+    destino: "Farmacia Central / Almacén General de Abasto",
+    fecha_emision: new Date().toLocaleString('es-MX', { dateStyle:'short', timeStyle:'short' }),
+    turno,
+    responsable: resp,
+    prioridad,
+    items,
+    estado: 'ENVIADO_FARMACIA',
+    api_ack: `ACK-HTTP200-${Math.random().toString(36).substring(2, 9).toUpperCase()}`
+  };
+
+  state.colectivos.push(nuevoColectivo);
+  saveState();
+
+  toast(`Pedido Colectivo ${folio} transmitido vía API a Farmacia Central.`, 'success');
+
+  // Mostrar el formato oficial impreso/visualizable
+  verFormatoColectivo(folio);
+}
+
+// ── FORMATO OFICIAL IMPRIMIBLE DE PEDIDO COLECTIVO ──
+function verFormatoColectivo(folio) {
+  const col = state.colectivos.find(c => c.folio === folio);
+  if (!col) return;
+
+  const totalPiezas = col.items.reduce((acc, i) => acc + i.cantidad, 0);
+
+  const tablaItems = col.items.map((it, idx) => `
+    <tr class="border-b border-[#cbd5e1] text-xs">
+      <td class="py-2 px-3 text-center font-bold text-slate-500">${idx+1}</td>
+      <td class="py-2 px-3 font-mono font-bold text-[#0284c7]">${it.clave}</td>
+      <td class="py-2 px-3 font-bold text-[#0f172a]">${it.nombre} <span class="font-normal text-[#64748b]">(${it.presentacion})</span></td>
+      <td class="py-2 px-3 text-center text-[#475569]">${it.unidad_fisica}</td>
+      <td class="py-2 px-3 text-center font-mono text-slate-500">${it.stock_actual_cendis}</td>
+      <td class="py-2 px-3 text-center font-mono text-slate-500">${it.stock_objetivo}</td>
+      <td class="py-2 px-3 text-center font-mono font-bold text-purple-900 bg-purple-50">${it.cantidad}</td>
+    </tr>
+  `).join('');
+
+  openModal(`Formato Oficial de Requisición Colectiva — ${col.folio}`, `
+    <div id="print-area" class="print-page bg-[#ffffff] text-[#0f172a]">
+
+      <!-- Membrete Oficial -->
+      <div class="border-b-2 border-[#0f172a] pb-4 mb-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-lg bg-[#0284c7] flex items-center justify-center text-[#ffffff] font-black text-xl">
+            🏥
+          </div>
+          <div>
+            <h4 class="font-black text-sm uppercase tracking-wider text-[#0f172a]">Instituto de Salud Hospitalaria</h4>
+            <p class="text-xs text-[#475569] font-bold">Dirección de Suministros Médicos & Farmacia Intrahospitalaria</p>
+            <p class="text-[11px] text-[#64748b]">FORMATO OFICIAL DE REQUISICIÓN COLECTIVA DE BOTIQUÍN CENDIS</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <span class="inline-block px-3 py-1 bg-purple-100 text-purple-900 border border-purple-300 font-mono font-black text-xs rounded-lg mb-1">
+            FOLIO: ${col.folio}
+          </span>
+          <p class="text-[11px] text-[#64748b] font-mono">Emisión: ${col.fecha_emision}</p>
+        </div>
+      </div>
+
+      <!-- Datos de Cabecera del Colectivo -->
+      <div class="grid grid-cols-2 gap-3 p-3.5 bg-[#f8fafc] border border-[#cbd5e1] rounded-xl text-xs mb-4">
+        <div><strong class="text-[#475569]">Origen (Servicio CENDIS):</strong> <span class="font-bold text-[#0f172a]">${col.origen_cendis}</span></div>
+        <div><strong class="text-[#475569]">Destino:</strong> <span class="font-bold text-[#0f172a]">${col.destino}</span></div>
+        <div><strong class="text-[#475569]">Personal Responsable CENDIS:</strong> <span class="font-bold text-[#0f172a]">${col.responsable}</span></div>
+        <div><strong class="text-[#475569]">Turno:</strong> <span class="font-bold text-[#0f172a]">${col.turno}</span> (${col.prioridad})</div>
+        <div><strong class="text-[#475569]">Estado del Pedido:</strong> <span class="font-bold text-purple-700">Transmitido Electrónicamente</span></div>
+        <div><strong class="text-[#475569]">Transmisión API:</strong> <span class="font-mono text-emerald-700 font-bold">${col.api_ack}</span></div>
+      </div>
+
+      <!-- AVISO NORMATIVO FÍSICO DESTACADO -->
+      <div class="p-3 mb-4 rounded-xl bg-amber-50 border-2 border-amber-300 text-xs text-amber-900 leading-relaxed flex items-start gap-2.5">
+        <span class="text-base">📢</span>
+        <div>
+          <strong class="font-black uppercase tracking-wide">Instrucción Normativa y Operativa Obligatoria:</strong><br>
+          Este pedido colectivo ha sido registrado exitosamente en el sistema digital y transmitido a la cola de Farmacia Central. Sin embargo, conforme a la normativa hospitalaria vigente, <strong>debe IMPRIMIRSE este formato físico y presentarse con firmas autógrafas ante la ventanilla de Farmacia Central</strong> para la dispensación física de los insumos.
+        </div>
+      </div>
+
+      <!-- Tabla de Medicamentos -->
+      <div class="border border-[#cbd5e1] rounded-xl overflow-hidden mb-6">
+        <table class="w-full text-left">
+          <thead class="bg-[#f1f5f9] border-b border-[#cbd5e1] text-[11px] font-bold text-[#475569] uppercase">
+            <tr>
+              <th class="py-2 px-3 text-center">#</th>
+              <th class="py-2 px-3">Clave</th>
+              <th class="py-2 px-3">Medicamento / Presentación</th>
+              <th class="py-2 px-3 text-center">Unidad</th>
+              <th class="py-2 px-3 text-center">Stock CENDIS</th>
+              <th class="py-2 px-3 text-center">Meta Obj.</th>
+              <th class="py-2 px-3 text-center bg-purple-100/60 text-purple-950 font-black">Cant. Solicitada</th>
+            </tr>
+          </thead>
+          <tbody>${tablaItems}</tbody>
+          <tfoot class="bg-[#f8fafc] border-t-2 border-[#cbd5e1] text-xs font-bold">
+            <tr>
+              <td colspan="6" class="py-2.5 px-3 text-right text-[#475569]">TOTAL DE PIEZAS SOLICITADAS:</td>
+              <td class="py-2.5 px-3 text-center font-mono font-black text-purple-900 bg-purple-100">${totalPiezas} unidades</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <!-- Cuadros de Firmas Oficiales -->
+      <div class="grid grid-cols-3 gap-6 pt-4 text-center text-xs mt-6 border-t border-[#cbd5e1]">
+        <div>
+          <div class="border-b border-[#0f172a] h-12 mb-1"></div>
+          <p class="font-bold text-[#0f172a]">Solicita (CENDIS)</p>
+          <p class="text-[11px] text-[#64748b]">${col.responsable}</p>
+        </div>
+        <div>
+          <div class="border-b border-[#0f172a] h-12 mb-1"></div>
+          <p class="font-bold text-[#0f172a]">Autoriza (Jefatura de Servicio)</p>
+          <p class="text-[11px] text-[#64748b]">Firma y Sello</p>
+        </div>
+        <div>
+          <div class="border-b border-[#0f172a] h-12 mb-1"></div>
+          <p class="font-bold text-[#0f172a]">Surtido por (Farmacia Central)</p>
+          <p class="text-[11px] text-[#64748b]">Firma / Fecha de Recepción</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Acciones del Modal -->
+    <div class="flex gap-3 mt-6 pt-4 border-t border-[#cbd5e1] no-print">
+      <button onclick="window.print()" class="btn btn-purple flex-1 font-bold shadow-sm">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        🖨️ Imprimir Formato Físico
+      </button>
+      <button onclick="verPayloadJson('${col.folio}')" class="btn btn-secondary text-xs">
+        API Payload (JSON)
+      </button>
+      <button onclick="closeModal()" class="btn btn-secondary">Cerrar</button>
+    </div>
+  `);
+}
+
+function verPayloadJson(folio) {
+  const col = state.colectivos.find(c => c.folio === folio);
+  if (!col) return;
+  alert(`PAYLOAD API INSTITUCIONAL (Simulada):\n\nPOST /api/v1/farmacia/pedidos-colectivos\n` + JSON.stringify(col, null, 2));
+}
+
+// ──────────────────────────────────────────────────
+//  4. CATÁLOGO DE MEDICAMENTOS
 // ──────────────────────────────────────────────────
 function medicamentos() {
   const rows = state.medicamentos.map(m => `
     <tr>
-      <td class="py-3 px-4 font-mono text-sm font-semibold" style="color:var(--primary);">${m.clave}</td>
-      <td class="py-3 px-4 text-sm font-medium" style="color:var(--foreground);">${m.nombre}</td>
-      <td class="py-3 px-4 text-sm" style="color:var(--muted-foreground);">${m.presentacion}</td>
-      <td class="py-3 px-4 text-sm" style="color:var(--muted-foreground);">${m.unidad_fisica}</td>
-      <td class="py-3 px-4 text-sm font-semibold">${m.stock_actual}</td>
-      <td class="py-3 px-4 text-sm">${m.stock_objetivo}</td>
+      <td class="py-3 px-4 font-mono font-bold text-sm text-[#0284c7]">${m.clave}</td>
+      <td class="py-3 px-4 text-sm font-bold text-[#0f172a]">${m.nombre}</td>
+      <td class="py-3 px-4 text-sm text-[#64748b]">${m.presentacion}</td>
+      <td class="py-3 px-4 text-sm text-[#64748b]">${m.unidad_fisica}</td>
+      <td class="py-3 px-4 text-sm font-bold ${m.stock_actual === 0 ? 'text-red-600' : 'text-[#0f172a]'}">${m.stock_actual}</td>
+      <td class="py-3 px-4 text-sm font-mono text-[#64748b]">${m.stock_objetivo}</td>
       <td class="py-3 px-4">${badge(m.activo ? 'ACTIVO' : 'INACTIVO')}</td>
       <td class="py-3 px-4">
         <div class="flex gap-2">
@@ -503,28 +1032,29 @@ function medicamentos() {
     </tr>`).join('') || `<tr><td colspan="8">${emptyState('No hay medicamentos registrados.')}</td></tr>`;
 
   return `
-    <div class="flex items-center justify-between mb-6">
+    <div class="bg-[#ffffff] p-5 rounded-2xl border border-[#cbd5e1] mb-6 shadow-sm flex items-center justify-between">
       <div>
-        <h2 class="text-base font-bold" style="color:var(--foreground);">Catálogo de Medicamentos</h2>
-        <p class="text-sm" style="color:var(--muted-foreground);">${state.medicamentos.length} registros · ${state.medicamentos.filter(m=>m.activo).length} activos</p>
+        <h2 class="text-lg font-black text-[#0f172a]">Catálogo General de Medicamentos</h2>
+        <p class="text-sm text-[#64748b]">${state.medicamentos.length} claves registradas · ${state.medicamentos.filter(m=>m.activo).length} vigentes en botiquín</p>
       </div>
-      <button onclick="abrirRegistrarMed()" class="btn btn-primary">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Nuevo Medicamento
+      <button onclick="abrirRegistrarMed()" class="btn btn-primary font-bold shadow-sm">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Registrar Nuevo Medicamento
       </button>
     </div>
-    <div class="rounded-2xl border border-[var(--border)] overflow-hidden" style="background:var(--card);">
+
+    <div class="rounded-2xl border border-[#cbd5e1] overflow-hidden bg-[#ffffff] shadow-sm">
       <div class="overflow-x-auto">
         <table class="w-full sc-table">
           <thead><tr>
-            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Clave</th>
-            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Nombre</th>
-            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Presentación</th>
-            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Unidad</th>
-            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Stock Act.</th>
-            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Stock Obj.</th>
-            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Estado</th>
-            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Acciones</th>
+            <th class="py-3 px-4 text-left text-xs font-bold text-[#475569]">Clave</th>
+            <th class="py-3 px-4 text-left text-xs font-bold text-[#475569]">Nombre Genérico</th>
+            <th class="py-3 px-4 text-left text-xs font-bold text-[#475569]">Presentación</th>
+            <th class="py-3 px-4 text-left text-xs font-bold text-[#475569]">Unidad</th>
+            <th class="py-3 px-4 text-left text-xs font-bold text-[#475569]">Stock Actual CENDIS</th>
+            <th class="py-3 px-4 text-left text-xs font-bold text-[#475569]">Stock Objetivo</th>
+            <th class="py-3 px-4 text-left text-xs font-bold text-[#475569]">Estado</th>
+            <th class="py-3 px-4 text-left text-xs font-bold text-[#475569]">Acciones</th>
           </tr></thead>
           <tbody>${rows}</tbody>
         </table>
@@ -533,15 +1063,20 @@ function medicamentos() {
 }
 
 function abrirRegistrarMed() {
-  openModal('Registrar Nuevo Medicamento', `
-    ${inputRow('Clave (4 dígitos)', 'm-clave', '5121')}
-    ${inputRow('Nombre del Medicamento', 'm-nombre', 'Paracetamol 1 g')}
-    ${inputRow('Presentación', 'm-pres', 'Solucion inyectable')}
-    ${inputRow('Unidad Física', 'm-unidad', 'Ampolleta')}
-    ${inputRow('Stock Actual', 'm-stock-act', '0', 'number')}
-    ${inputRow('Stock Objetivo', 'm-stock-obj', '30', 'number')}
-    <div class="flex gap-3 mt-6">
-      <button onclick="guardarMed()" class="btn btn-primary flex-1">Registrar</button>
+  openModal('Registrar Nuevo Medicamento en Catálogo', `
+    <div class="p-3 mb-4 rounded-xl bg-sky-50 border border-sky-200 text-xs text-sky-900 leading-relaxed">
+      Todos los campos se validan con expresiones regulares antes del registro para cumplir con los estándares de control farmacológico.
+    </div>
+    ${inputRow('Clave Institucional (Exactamente 4 dígitos)', 'm-clave', '5121')}
+    ${inputRow('Nombre del Medicamento y Concentración', 'm-nombre', 'Paracetamol 1 g')}
+    ${inputRow('Presentación Farmacéutica', 'm-pres', 'Solucion inyectable')}
+    ${inputRow('Unidad Física de Empaque', 'm-unidad', 'Ampolleta')}
+    <div class="grid grid-cols-2 gap-4">
+      ${inputRow('Stock Inicial en CENDIS', 'm-stock-act', '0', 'number')}
+      ${inputRow('Stock Objetivo (Meta)', 'm-stock-obj', '30', 'number')}
+    </div>
+    <div class="flex gap-3 mt-6 pt-4 border-t border-[#cbd5e1]">
+      <button onclick="guardarMed()" class="btn btn-primary flex-1 font-bold">Registrar Medicamento</button>
       <button onclick="closeModal()" class="btn btn-secondary">Cancelar</button>
     </div>`);
 }
@@ -560,25 +1095,25 @@ function guardarMed() {
   if (!RE.unidad.test(unidad))      { document.getElementById('m-unidad').classList.add('error'); ok=false; }
   if (!RE.stock.test(stockAct))     { document.getElementById('m-stock-act').classList.add('error'); ok=false; }
   if (!RE.stock.test(stockObj))     { document.getElementById('m-stock-obj').classList.add('error'); ok=false; }
-  if (!ok) { toast('Corrija los campos marcados en rojo.', 'error'); return; }
+  if (!ok) { toast('Corrija los campos marcados en rojo (formato inválido).', 'error'); return; }
   if (state.medicamentos.find(m => m.clave === clave)) {
-    toast('La clave ya está registrada.', 'error'); return;
+    toast('La clave institucional ya se encuentra registrada.', 'error'); return;
   }
   state.medicamentos.push({ clave, nombre, presentacion: pres, unidad_fisica: unidad,
     stock_actual: parseInt(stockAct), stock_objetivo: parseInt(stockObj), activo: true });
   saveState(); closeModal(); renderPage('medicamentos');
-  toast('Medicamento registrado correctamente.', 'success');
+  toast('Medicamento registrado en catálogo correctamente.', 'success');
 }
 
 function editarMed(clave) {
   const m = state.medicamentos.find(x => x.clave === clave);
   if (!m) return;
-  openModal(`Editar — ${m.nombre}`, `
-    ${inputRow('Nuevo Nombre', 'e-nombre', m.nombre)}
-    ${inputRow('Nuevo Stock Objetivo', 'e-stock', m.stock_objetivo, 'number')}
+  openModal(`Modificar Medicamento — ${m.nombre}`, `
+    ${inputRow('Nombre / Concentración Actualizada', 'e-nombre', m.nombre)}
+    ${inputRow('Nuevo Stock Objetivo (Meta CENDIS)', 'e-stock', m.stock_objetivo, 'number')}
     <input type="hidden" id="e-clave" value="${clave}">
-    <div class="flex gap-3 mt-6">
-      <button onclick="guardarEdicion()" class="btn btn-primary flex-1">Guardar Cambios</button>
+    <div class="flex gap-3 mt-6 pt-4 border-t border-[#cbd5e1]">
+      <button onclick="guardarEdicion()" class="btn btn-primary flex-1 font-bold">Guardar Modificaciones</button>
       <button onclick="closeModal()" class="btn btn-secondary">Cancelar</button>
     </div>`);
 }
@@ -590,62 +1125,65 @@ function guardarEdicion() {
   let ok = true;
   if (!RE.nombre.test(nombre))  { document.getElementById('e-nombre').classList.add('error'); ok=false; }
   if (!RE.stock.test(stock))    { document.getElementById('e-stock').classList.add('error'); ok=false; }
-  if (!ok) { toast('Corrija los campos marcados en rojo.', 'error'); return; }
+  if (!ok) { toast('Verifique los campos con error.', 'error'); return; }
   const m = state.medicamentos.find(x => x.clave === clave);
   m.nombre = nombre; m.stock_objetivo = parseInt(stock);
   saveState(); closeModal(); renderPage('medicamentos');
-  toast('Medicamento actualizado.', 'success');
+  toast('Medicamento actualizado exitosamente.', 'success');
 }
 
 function desactivarMed(clave) {
   const m = state.medicamentos.find(x => x.clave === clave);
-  if (!confirm(`¿Desactivar "${m.nombre}"?`)) return;
+  if (!confirm(`¿Confirmar baja lógica de "${m.nombre}"?`)) return;
   m.activo = false;
   saveState(); renderPage('medicamentos');
-  toast('Medicamento desactivado.', 'info');
+  toast('Medicamento desactivado del catálogo.', 'info');
 }
 
 function activarMed(clave) {
   const m = state.medicamentos.find(x => x.clave === clave);
   m.activo = true;
   saveState(); renderPage('medicamentos');
-  toast('Medicamento activado.', 'success');
+  toast('Medicamento reactivado.', 'success');
 }
 
 // ──────────────────────────────────────────────────
-//  PACIENTES
+//  5. CENSO DE PACIENTES
 // ──────────────────────────────────────────────────
 function pacientes() {
   return `
-    <div class="max-w-lg mx-auto">
-      <div class="rounded-2xl border border-[var(--border)] p-8" style="background:var(--card);">
-        <h2 class="text-base font-bold mb-1 section-header" style="color:var(--foreground);">Consultar Paciente</h2>
-        <p class="text-sm mb-6" style="color:var(--muted-foreground);">Ingrese servicio y cama para localizar al paciente.</p>
-        ${inputRow('Servicio', 'p-servicio', 'Pediatria')}
-        ${inputRow('Cama', 'p-cama', '01')}
-        <button onclick="buscarPaciente()" class="btn btn-primary w-full mt-2">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          Buscar Paciente
+    <div class="max-w-2xl mx-auto">
+      <div class="rounded-2xl border border-[#cbd5e1] p-8 bg-[#ffffff] shadow-sm mb-6">
+        <h2 class="text-base font-black mb-1 text-[#0f172a]">Búsqueda de Pacientes Hospitalizados</h2>
+        <p class="text-sm mb-6 text-[#64748b]">Localice el registro oficial ingresando el servicio y número de cama.</p>
+        <div class="grid grid-cols-2 gap-4">
+          ${inputRow('Servicio Clínico', 'p-servicio', 'Pediatria')}
+          ${inputRow('Cama Asignada', 'p-cama', '01')}
+        </div>
+        <button onclick="buscarPaciente()" class="btn btn-primary w-full font-bold shadow-sm mt-2">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Consultar Paciente
         </button>
         <div id="p-result" class="mt-6"></div>
       </div>
-      <div class="mt-6 rounded-2xl border border-[var(--border)] overflow-hidden" style="background:var(--card);">
-        <div class="px-5 py-3 border-b border-[var(--border)]">
-          <h3 class="font-semibold text-sm" style="color:var(--foreground);">Todos los Pacientes Registrados</h3>
+
+      <div class="rounded-2xl border border-[#cbd5e1] overflow-hidden bg-[#ffffff] shadow-sm">
+        <div class="px-5 py-3.5 border-b border-[#cbd5e1] bg-[#f8fafc]">
+          <h3 class="font-bold text-sm text-[#0f172a]">Censo de Pacientes de Prueba</h3>
         </div>
         <table class="w-full sc-table">
           <thead><tr>
-            <th class="py-2.5 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Servicio</th>
-            <th class="py-2.5 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Cama</th>
-            <th class="py-2.5 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Nombre</th>
-            <th class="py-2.5 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">NSS</th>
+            <th class="py-2.5 px-4 text-left text-xs font-bold text-[#475569]">Servicio</th>
+            <th class="py-2.5 px-4 text-left text-xs font-bold text-[#475569]">Cama</th>
+            <th class="py-2.5 px-4 text-left text-xs font-bold text-[#475569]">Nombre Completo</th>
+            <th class="py-2.5 px-4 text-left text-xs font-bold text-[#475569]">NSS</th>
           </tr></thead>
           <tbody>${state.pacientes.map(p=>`
             <tr>
-              <td class="py-2.5 px-4 text-sm">${p.servicio}</td>
-              <td class="py-2.5 px-4 text-sm font-mono">${p.cama}</td>
-              <td class="py-2.5 px-4 text-sm font-medium" style="color:var(--foreground);">${p.nombre}</td>
-              <td class="py-2.5 px-4 text-sm font-mono" style="color:var(--muted-foreground);">${p.nss}</td>
+              <td class="py-2.5 px-4 text-sm font-semibold text-[#0f172a]">${p.servicio}</td>
+              <td class="py-2.5 px-4 text-sm font-mono font-bold text-[#0284c7]">${p.cama}</td>
+              <td class="py-2.5 px-4 text-sm font-medium text-[#0f172a]">${p.nombre}</td>
+              <td class="py-2.5 px-4 text-sm font-mono text-[#64748b]">${p.nss}</td>
             </tr>`).join('')}
           </tbody>
         </table>
@@ -659,128 +1197,32 @@ function buscarPaciente() {
   let ok = true;
   if (!RE.servicio.test(serv)) { document.getElementById('p-servicio').classList.add('error'); ok=false; }
   if (!RE.cama.test(cama))     { document.getElementById('p-cama').classList.add('error'); ok=false; }
-  if (!ok) { toast('Formato inválido.', 'error'); return; }
+  if (!ok) { toast('Formato inválido en servicio o cama.', 'error'); return; }
   const p = state.pacientes.find(x =>
     x.servicio.toLowerCase() === serv.toLowerCase() && x.cama === cama);
   const el = document.getElementById('p-result');
   if (p) {
     el.innerHTML = `
-      <div class="rounded-xl border border-green-500 p-5" style="background:color-mix(in srgb,#16a34a 8%,transparent);">
+      <div class="rounded-xl border-2 border-emerald-500 p-5 bg-emerald-50/50">
         <div class="flex items-center gap-2 mb-3">
-          <span class="badge badge-green">Paciente encontrado</span>
+          <span class="badge badge-green font-bold">Paciente Localizado</span>
         </div>
         <div class="grid grid-cols-2 gap-3 text-sm">
-          <div><p class="text-xs mb-0.5" style="color:var(--muted-foreground);">Nombre</p><p class="font-semibold" style="color:var(--foreground);">${p.nombre}</p></div>
-          <div><p class="text-xs mb-0.5" style="color:var(--muted-foreground);">NSS</p><p class="font-mono font-semibold" style="color:var(--foreground);">${p.nss}</p></div>
-          <div><p class="text-xs mb-0.5" style="color:var(--muted-foreground);">Servicio</p><p style="color:var(--foreground);">${p.servicio}</p></div>
-          <div><p class="text-xs mb-0.5" style="color:var(--muted-foreground);">Cama</p><p class="font-mono" style="color:var(--foreground);">${p.cama}</p></div>
+          <div><p class="text-xs text-[#64748b]">Nombre Completo</p><p class="font-bold text-[#0f172a]">${p.nombre}</p></div>
+          <div><p class="text-xs text-[#64748b]">NSS</p><p class="font-mono font-bold text-[#0284c7]">${p.nss}</p></div>
+          <div><p class="text-xs text-[#64748b]">Servicio Hospitalario</p><p class="font-bold text-[#0f172a]">${p.servicio}</p></div>
+          <div><p class="text-xs text-[#64748b]">Cama Asignada</p><p class="font-mono font-bold text-[#0f172a]">${p.cama}</p></div>
         </div>
       </div>`;
   } else {
-    el.innerHTML = `<div class="rounded-xl border border-red-500 p-4" style="background:color-mix(in srgb,#ef4444 8%,transparent);">
-      <p class="text-sm font-medium" style="color:#ef4444;">No se encontró paciente en ${serv} / Cama ${cama}.</p>
+    el.innerHTML = `<div class="rounded-xl border border-red-300 p-4 bg-red-50 text-red-700 text-sm font-semibold">
+      No se encontró registro para el Servicio "${serv}" y Cama "${cama}".
     </div>`;
   }
 }
 
 // ──────────────────────────────────────────────────
-//  SOLICITUDES
-// ──────────────────────────────────────────────────
-function solicitudes() {
-  const rows = [...state.solicitudes].reverse().map(s => `
-    <tr>
-      <td class="py-3 px-4 font-mono text-sm font-bold" style="color:var(--primary);">${s.folio}</td>
-      <td class="py-3 px-4 text-sm">${s.servicio} / ${s.cama}</td>
-      <td class="py-3 px-4 text-sm" style="color:var(--foreground);">${s.paciente}</td>
-      <td class="py-3 px-4 text-sm">${s.nombre_medicamento}</td>
-      <td class="py-3 px-4 text-sm text-center">${s.cantidad}</td>
-      <td class="py-3 px-4 text-sm text-center">${s.cantidad_recibida}</td>
-      <td class="py-3 px-4">${badge(s.estado)}</td>
-      <td class="py-3 px-4">${badge(s.tipo)}</td>
-      <td class="py-3 px-4 text-sm" style="color:var(--muted-foreground);">${s.turno}</td>
-    </tr>`).join('') || `<tr><td colspan="9">${emptyState('Sin solicitudes registradas.')}</td></tr>`;
-
-  return `
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h2 class="text-base font-bold" style="color:var(--foreground);">Solicitudes</h2>
-        <p class="text-sm" style="color:var(--muted-foreground);">${state.solicitudes.length} registros</p>
-      </div>
-      <button onclick="abrirNuevaSolicitud()" class="btn btn-primary">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Nueva Solicitud
-      </button>
-    </div>
-    <div class="rounded-2xl border border-[var(--border)] overflow-hidden" style="background:var(--card);">
-      <div class="overflow-x-auto">
-        <table class="w-full sc-table">
-          <thead><tr>
-            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Folio</th>
-            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Serv/Cama</th>
-            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Paciente</th>
-            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Medicamento</th>
-            <th class="py-3 px-4 text-center text-xs font-semibold" style="color:var(--muted-foreground);">Sol.</th>
-            <th class="py-3 px-4 text-center text-xs font-semibold" style="color:var(--muted-foreground);">Rec.</th>
-            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Estado</th>
-            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Tipo</th>
-            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Turno</th>
-          </tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-    </div>`;
-}
-
-function abrirNuevaSolicitud() {
-  const medsActivos = state.medicamentos.filter(m => m.activo);
-  const medOpts = medsActivos.map(m => [m.clave, `${m.nombre} (${m.presentacion})`]);
-  const pacOpts = state.pacientes.map(p => [`${p.servicio}||${p.cama}`, `${p.nombre} — ${p.servicio} / ${p.cama}`]);
-  openModal('Nueva Solicitud', `
-    ${selectRow('Paciente (Servicio / Cama)', 'ns-pac', pacOpts)}
-    ${selectRow('Medicamento', 'ns-med', medOpts)}
-    ${inputRow('Cantidad Solicitada', 'ns-cant', '1', 'number')}
-    ${selectRow('Turno', 'ns-turno', [['MATUTINO','Matutino'],['VESPERTINO','Vespertino'],['NOCTURNO','Nocturno']])}
-    ${inputRow('Usuario Responsable', 'ns-usuario', 'Enf. García')}
-    ${selectRow('Tipo', 'ns-tipo', [['NORMAL','Normal'],['URGENCIA','🚨 Urgencia']])}
-    <div class="flex gap-3 mt-6">
-      <button onclick="guardarSolicitud()" class="btn btn-primary flex-1">Registrar Solicitud</button>
-      <button onclick="closeModal()" class="btn btn-secondary">Cancelar</button>
-    </div>`);
-}
-
-function guardarSolicitud() {
-  const pacKey = fieldVal('ns-pac');
-  const medClave = fieldVal('ns-med');
-  const cant = fieldVal('ns-cant');
-  const turno = fieldVal('ns-turno');
-  const usuario = fieldVal('ns-usuario');
-  const tipo = fieldVal('ns-tipo');
-
-  let ok = true;
-  if (!RE.cantidadPos.test(cant)) { document.getElementById('ns-cant').classList.add('error'); ok=false; }
-  if (!RE.usuario.test(usuario))  { document.getElementById('ns-usuario').classList.add('error'); ok=false; }
-  if (!ok) { toast('Corrija los campos marcados.', 'error'); return; }
-
-  const [serv, cama] = pacKey.split('||');
-  const pac = state.pacientes.find(p => p.servicio === serv && p.cama === cama);
-  const med = state.medicamentos.find(m => m.clave === medClave);
-  if (!pac || !med) { toast('Paciente o medicamento no encontrado.', 'error'); return; }
-
-  const folio = `SOL-${String(state.contador).padStart(4,'0')}`;
-  state.contador++;
-  state.solicitudes.push({
-    folio, servicio: pac.servicio, cama: pac.cama,
-    paciente: pac.nombre, nss: pac.nss,
-    medicamento: med.clave, nombre_medicamento: med.nombre,
-    cantidad: parseInt(cant), cantidad_recibida: 0, cantidad_pendiente: parseInt(cant),
-    turno, usuario, tipo, estado: 'PENDIENTE'
-  });
-  saveState(); closeModal(); renderPage('solicitudes');
-  toast(`Solicitud ${folio} registrada.`, 'success');
-}
-
-// ──────────────────────────────────────────────────
-//  INVENTARIO
+//  6. CONTROL DE INVENTARIO / NIVEL DE STOCK
 // ──────────────────────────────────────────────────
 function inventario() {
   const meds = state.medicamentos.filter(m => m.activo);
@@ -790,39 +1232,45 @@ function inventario() {
     const faltante = Math.max(0, m.stock_objetivo - m.stock_actual);
     return `
       <tr>
-        <td class="py-3 px-4 font-mono text-sm font-semibold" style="color:var(--primary);">${m.clave}</td>
-        <td class="py-3 px-4 text-sm font-medium" style="color:var(--foreground);">${m.nombre}</td>
-        <td class="py-3 px-4 text-sm" style="color:var(--muted-foreground);">${m.presentacion}</td>
-        <td class="py-3 px-4 text-sm">${m.unidad_fisica}</td>
-        <td class="py-3 px-4 text-sm font-bold" style="color:${m.stock_actual===0?'#ef4444':color};">${m.stock_actual}</td>
-        <td class="py-3 px-4 text-sm" style="color:var(--muted-foreground);">${m.stock_objetivo}</td>
-        <td class="py-3 px-4 text-sm">${faltante > 0 ? `<span style="color:#f59e0b;font-weight:600;">-${faltante}</span>` : '<span style="color:#16a34a;font-weight:600;">✓</span>'}</td>
-        <td class="py-3 px-4" style="min-width:120px;">
+        <td class="py-3.5 px-4 font-mono font-bold text-sm text-[#0284c7]">${m.clave}</td>
+        <td class="py-3.5 px-4 text-sm font-bold text-[#0f172a]">${m.nombre}</td>
+        <td class="py-3.5 px-4 text-sm text-[#64748b]">${m.presentacion}</td>
+        <td class="py-3.5 px-4 text-sm font-medium">${m.unidad_fisica}</td>
+        <td class="py-3.5 px-4 text-sm font-black ${m.stock_actual === 0 ? 'text-red-600' : 'text-[#0f172a]'}">${m.stock_actual}</td>
+        <td class="py-3.5 px-4 text-sm font-mono text-[#64748b]">${m.stock_objetivo}</td>
+        <td class="py-3.5 px-4 text-sm">${faltante > 0 ? `<span class="badge badge-yellow font-bold">Faltan ${faltante}</span>` : '<span class="badge badge-green font-bold">Cubierto</span>'}</td>
+        <td class="py-3.5 px-4" style="min-width:140px;">
           <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${color};"></div></div>
-          <p class="text-xs mt-1 font-mono" style="color:var(--muted-foreground);">${pct}%</p>
+          <p class="text-xs mt-1 font-mono font-bold ${pct < 30 ? 'text-red-600' : 'text-slate-600'}">${pct}% cobertura</p>
         </td>
       </tr>`;
-  }).join('') || `<tr><td colspan="8">${emptyState('No hay medicamentos activos.')}</td></tr>`;
+  }).join('') || `<tr><td colspan="8">${emptyState('No hay medicamentos activos en botiquín.')}</td></tr>`;
 
   return `
-    <div class="flex items-center justify-between mb-6">
+    <div class="bg-[#ffffff] p-5 rounded-2xl border border-[#cbd5e1] mb-6 shadow-sm flex items-center justify-between">
       <div>
-        <h2 class="text-base font-bold" style="color:var(--foreground);">Inventario Actual</h2>
-        <p class="text-sm" style="color:var(--muted-foreground);">${meds.length} medicamentos activos</p>
+        <h2 class="text-lg font-black text-[#0f172a]">Nivel de Stock y Existencias CENDIS</h2>
+        <p class="text-sm text-[#64748b]">${meds.length} medicamentos activos bajo control de botiquín</p>
       </div>
+      <!-- BOTÓN PARA GENERAR COLECTIVO -->
+      <button onclick="abrirGenerarColectivo()" class="btn btn-purple shadow-sm font-bold">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        Generar Pedido Colectivo a Farmacia Central
+      </button>
     </div>
-    <div class="rounded-2xl border border-[var(--border)] overflow-hidden" style="background:var(--card);">
+
+    <div class="rounded-2xl border border-[#cbd5e1] overflow-hidden bg-[#ffffff] shadow-sm">
       <div class="overflow-x-auto">
         <table class="w-full sc-table">
           <thead><tr>
-            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Clave</th>
-            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Nombre</th>
-            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Presentación</th>
-            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Unidad</th>
-            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Stock Act.</th>
-            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Stock Obj.</th>
-            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Faltante</th>
-            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Cobertura</th>
+            <th class="py-3.5 px-4 text-left text-xs font-bold text-[#475569]">Clave</th>
+            <th class="py-3.5 px-4 text-left text-xs font-bold text-[#475569]">Medicamento</th>
+            <th class="py-3.5 px-4 text-left text-xs font-bold text-[#475569]">Presentación</th>
+            <th class="py-3.5 px-4 text-left text-xs font-bold text-[#475569]">Unidad</th>
+            <th class="py-3.5 px-4 text-left text-xs font-bold text-[#475569]">Stock CENDIS</th>
+            <th class="py-3.5 px-4 text-left text-xs font-bold text-[#475569]">Stock Meta</th>
+            <th class="py-3.5 px-4 text-left text-xs font-bold text-[#475569]">Balance Faltante</th>
+            <th class="py-3.5 px-4 text-left text-xs font-bold text-[#475569]">Porcentaje Cobertura</th>
           </tr></thead>
           <tbody>${rows}</tbody>
         </table>
@@ -831,18 +1279,18 @@ function inventario() {
 }
 
 // ──────────────────────────────────────────────────
-//  PROCESAR SOLICITUD
+//  7. DICTAMEN DE FARMACIA (PROCESAR SOLICITUD)
 // ──────────────────────────────────────────────────
 function procesar() {
   const pendientes = state.solicitudes.filter(s => s.estado === 'PENDIENTE');
   const opts = pendientes.map(s => [s.folio, `${s.folio} — ${s.nombre_medicamento} × ${s.cantidad} (${s.paciente})`]);
 
   if (!pendientes.length) {
-    return `<div class="max-w-lg mx-auto">
-      <div class="rounded-2xl border border-[var(--border)] p-8" style="background:var(--card);">
-        ${emptyState('No hay solicitudes pendientes de procesar.')}
-        <div class="text-center mt-4">
-          <button onclick="goTo('solicitudes')" class="btn btn-primary btn-sm">Ver Solicitudes</button>
+    return `<div class="max-w-xl mx-auto">
+      <div class="rounded-2xl border border-[#cbd5e1] p-8 bg-[#ffffff] shadow-sm text-center">
+        ${emptyState('No hay solicitudes de piso pendientes de dictamen.')}
+        <div class="mt-4">
+          <button onclick="goTo('solicitudes')" class="btn btn-primary btn-sm font-bold">Ver Solicitudes de Piso</button>
         </div>
       </div>
     </div>`;
@@ -850,18 +1298,18 @@ function procesar() {
 
   return `
     <div class="max-w-xl mx-auto">
-      <div class="rounded-2xl border border-[var(--border)] p-8" style="background:var(--card);">
-        <h2 class="text-base font-bold mb-1 section-header" style="color:var(--foreground);">Respuesta de Farmacia</h2>
-        <p class="text-sm mb-6" style="color:var(--muted-foreground);">Seleccione la solicitud y registre la respuesta.</p>
-        ${selectRow('Solicitud Pendiente', 'pr-folio', opts)}
+      <div class="rounded-2xl border border-[#cbd5e1] p-8 bg-[#ffffff] shadow-sm">
+        <h2 class="text-base font-black mb-1 text-[#0f172a]">Dictamen de Solicitud de Piso</h2>
+        <p class="text-sm mb-6 text-[#64748b]">Seleccione la solicitud y registre la resolución institucional.</p>
+        ${selectRow('Solicitud Pendiente de Resolver', 'pr-folio', opts)}
         <div id="pr-preview" class="mb-5"></div>
-        <div class="grid grid-cols-2 gap-3">
-          <button onclick="responderFarmacia('SURTIDA')" class="btn btn-success w-full">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        <div class="grid grid-cols-2 gap-3 pt-3 border-t border-[#cbd5e1]">
+          <button onclick="responderFarmacia('SURTIDA')" class="btn btn-success w-full font-bold shadow-sm">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
             Surtir Solicitud
           </button>
-          <button onclick="responderFarmacia('NEGADA')" class="btn btn-danger w-full">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <button onclick="responderFarmacia('NEGADA')" class="btn btn-danger w-full font-bold shadow-sm">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             Negar Solicitud
           </button>
         </div>
@@ -885,14 +1333,14 @@ function previsualizarSolicitud() {
   const el = document.getElementById('pr-preview');
   if (!sol || !el) return;
   el.innerHTML = `
-    <div class="rounded-xl border border-[var(--border)] p-4 text-sm" style="background:var(--background);">
-      <div class="grid grid-cols-2 gap-2">
-        <div><span style="color:var(--muted-foreground);">Folio:</span> <strong>${sol.folio}</strong></div>
-        <div><span style="color:var(--muted-foreground);">Paciente:</span> ${sol.paciente}</div>
-        <div><span style="color:var(--muted-foreground);">Medicamento:</span> ${sol.nombre_medicamento}</div>
-        <div><span style="color:var(--muted-foreground);">Cantidad:</span> <strong>${sol.cantidad}</strong></div>
-        <div><span style="color:var(--muted-foreground);">Turno:</span> ${sol.turno}</div>
-        <div><span style="color:var(--muted-foreground);">Tipo:</span> ${badge(sol.tipo)}</div>
+    <div class="rounded-xl border border-[#cbd5e1] p-4 text-xs bg-[#f8fafc]">
+      <div class="grid grid-cols-2 gap-2.5">
+        <div><span class="text-[#64748b]">Folio:</span> <strong class="text-[#0284c7] font-mono">${sol.folio}</strong></div>
+        <div><span class="text-[#64748b]">Paciente:</span> <strong class="text-[#0f172a]">${sol.paciente}</strong></div>
+        <div><span class="text-[#64748b]">Medicamento:</span> <strong class="text-[#0f172a]">${sol.nombre_medicamento}</strong></div>
+        <div><span class="text-[#64748b]">Cantidad:</span> <strong class="text-[#0f172a]">${sol.cantidad} unidades</strong></div>
+        <div><span class="text-[#64748b]">Servicio:</span> ${sol.servicio} (Cama ${sol.cama})</div>
+        <div><span class="text-[#64748b]">Prioridad:</span> ${badge(sol.tipo)}</div>
       </div>
     </div>`;
 }
@@ -904,22 +1352,22 @@ function responderFarmacia(respuesta) {
   if (!sol || sol.estado !== 'PENDIENTE') { toast('Solicitud no encontrada o ya procesada.', 'error'); return; }
   sol.estado = respuesta;
   saveState(); renderPage('procesar');
-  toast(`Solicitud ${folio} marcada como ${respuesta}.`, respuesta === 'SURTIDA' ? 'success' : 'error');
+  toast(`Solicitud ${folio} actualizada como ${respuesta}.`, respuesta === 'SURTIDA' ? 'success' : 'error');
 }
 
 // ──────────────────────────────────────────────────
-//  RECEPCIÓN FÍSICA
+//  8. RECEPCIÓN FÍSICA EN PISO
 // ──────────────────────────────────────────────────
 function recepcion() {
   const surtidas = state.solicitudes.filter(s => s.estado === 'SURTIDA');
-  const opts = surtidas.map(s => [s.folio, `${s.folio} — ${s.nombre_medicamento} × ${s.cantidad}`]);
+  const opts = surtidas.map(s => [s.folio, `${s.folio} — ${s.nombre_medicamento} × ${s.cantidad} (${s.paciente})`]);
 
   if (!surtidas.length) {
-    return `<div class="max-w-lg mx-auto">
-      <div class="rounded-2xl border border-[var(--border)] p-8" style="background:var(--card);">
-        ${emptyState('No hay solicitudes surtidas pendientes de recepción.')}
-        <div class="text-center mt-4">
-          <button onclick="goTo('procesar')" class="btn btn-primary btn-sm">Ir a Procesar</button>
+    return `<div class="max-w-xl mx-auto">
+      <div class="rounded-2xl border border-[#cbd5e1] p-8 bg-[#ffffff] shadow-sm text-center">
+        ${emptyState('No hay solicitudes surtidas pendientes de recepción física.')}
+        <div class="mt-4">
+          <button onclick="goTo('procesar')" class="btn btn-primary btn-sm font-bold">Ir a Dictamen</button>
         </div>
       </div>
     </div>`;
@@ -927,16 +1375,16 @@ function recepcion() {
 
   return `
     <div class="max-w-xl mx-auto">
-      <div class="rounded-2xl border border-[var(--border)] p-8" style="background:var(--card);">
-        <h2 class="text-base font-bold mb-1 section-header" style="color:var(--foreground);">Registrar Recepción Física</h2>
-        <p class="text-sm mb-6" style="color:var(--muted-foreground);">Confirme las unidades recibidas físicamente.</p>
+      <div class="rounded-2xl border border-[#cbd5e1] p-8 bg-[#ffffff] shadow-sm">
+        <h2 class="text-base font-black mb-1 text-[#0f172a]">Registrar Recepción Física en Piso</h2>
+        <p class="text-sm mb-6 text-[#64748b]">Confirme las unidades recibidas físicamente para actualizar el stock en piso.</p>
         ${selectRow('Solicitud Surtida', 'rec-folio', opts)}
         <div id="rec-preview" class="mb-5"></div>
-        ${inputRow('Cantidad Recibida', 'rec-cant', '0', 'number')}
-        <div id="rec-rango" class="text-xs mb-4" style="color:var(--muted-foreground);"></div>
-        <button onclick="registrarRecepcion()" class="btn btn-primary w-full">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          Confirmar Recepción
+        ${inputRow('Cantidad Recibida Físicamente', 'rec-cant', '0', 'number')}
+        <div id="rec-rango" class="text-xs mb-4 text-[#64748b] font-medium"></div>
+        <button onclick="registrarRecepcion()" class="btn btn-primary w-full font-bold shadow-sm">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Confirmar Recepción y Actualizar Stock
         </button>
       </div>
     </div>`;
@@ -958,16 +1406,16 @@ function previsualizarRecepcion() {
   if (!sol || !el) return;
   const med = state.medicamentos.find(m => m.clave === sol.medicamento);
   el.innerHTML = `
-    <div class="rounded-xl border border-[var(--border)] p-4 text-sm" style="background:var(--background);">
+    <div class="rounded-xl border border-[#cbd5e1] p-4 text-xs bg-[#f8fafc]">
       <div class="grid grid-cols-2 gap-2">
-        <div><span style="color:var(--muted-foreground);">Folio:</span> <strong>${sol.folio}</strong></div>
-        <div><span style="color:var(--muted-foreground);">Paciente:</span> ${sol.paciente}</div>
-        <div><span style="color:var(--muted-foreground);">Medicamento:</span> ${sol.nombre_medicamento}</div>
-        <div><span style="color:var(--muted-foreground);">Cant. solicitada:</span> <strong>${sol.cantidad}</strong></div>
-        ${med ? `<div><span style="color:var(--muted-foreground);">Stock actual:</span> <strong>${med.stock_actual}</strong></div>` : ''}
+        <div><span class="text-[#64748b]">Folio:</span> <strong class="text-[#0284c7] font-mono">${sol.folio}</strong></div>
+        <div><span class="text-[#64748b]">Paciente:</span> <strong class="text-[#0f172a]">${sol.paciente}</strong></div>
+        <div><span class="text-[#64748b]">Medicamento:</span> <strong class="text-[#0f172a]">${sol.nombre_medicamento}</strong></div>
+        <div><span class="text-[#64748b]">Cant. Solicitada:</span> <strong class="text-[#0f172a]">${sol.cantidad} uds.</strong></div>
+        ${med ? `<div><span class="text-[#64748b]">Stock Actual CENDIS:</span> <strong class="text-emerald-700">${med.stock_actual}</strong></div>` : ''}
       </div>
     </div>`;
-  if (rng) rng.textContent = `Ingrese entre 0 y ${sol.cantidad} unidades.`;
+  if (rng) rng.textContent = `Ingrese entre 0 y ${sol.cantidad} unidades recibidas.`;
 }
 
 function registrarRecepcion() {
@@ -976,7 +1424,7 @@ function registrarRecepcion() {
   if (!RE.folio.test(folio)) { toast('Folio inválido.', 'error'); return; }
   if (!RE.cantidadGe0.test(cant)) { document.getElementById('rec-cant').classList.add('error'); toast('Cantidad inválida.', 'error'); return; }
   const sol = state.solicitudes.find(s => s.folio === folio);
-  if (!sol || sol.estado !== 'SURTIDA') { toast('Solicitud no encontrada o no está SURTIDA.', 'error'); return; }
+  if (!sol || sol.estado !== 'SURTIDA') { toast('Solicitud no localizada o no surtida.', 'error'); return; }
   const med = state.medicamentos.find(m => m.clave === sol.medicamento);
   const recibido = parseInt(cant);
   if (recibido < 0 || recibido > sol.cantidad) { toast(`La cantidad debe estar entre 0 y ${sol.cantidad}.`, 'error'); return; }
@@ -986,10 +1434,10 @@ function registrarRecepcion() {
   sol.estado = recibido === 0 ? 'NEGADA' : pendiente > 0 ? 'SURTIDA_PARCIAL' : 'SURTIDA';
   if (med) med.stock_actual += recibido;
   saveState(); renderPage('recepcion');
-  toast(`Recepción registrada. Estado: ${sol.estado}. Stock actualizado.`, 'success');
+  toast(`Recepción registrada (${sol.estado}). Stock actualizado.`, 'success');
 }
 
-// Attach recepcion events after render
+// Vinculación de eventos al renderizar
 const _origAttach = attachEvents;
 function attachEvents(page) {
   _origAttach(page);
@@ -997,7 +1445,7 @@ function attachEvents(page) {
 }
 
 // ──────────────────────────────────────────────────
-//  INIT
+//  INICIALIZACIÓN
 // ──────────────────────────────────────────────────
 goTo('dashboard');
 </script>
