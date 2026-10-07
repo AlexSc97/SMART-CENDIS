@@ -1,0 +1,64 @@
+=== A-01_clave_invalida: Validación: clave debe tener 4 dígitos ===
+Input sequence: '1\n123\n123\n123\n0\n'
+
+
+
+==================================================
+              SMART CENDIS
+==================================================
+Sistema de Gestión Digital de Solicitudes,
+Abastecimiento y Control de Inventario
+==================================================
+
+ 1. Registrar medicamento
+ 2. Consultar medicamentos
+ 3. Modificar medicamento
+ 4. Desactivar medicamento
+ 5. Consultar paciente
+ 6. Registrar solicitud
+ 7. Procesar solicitud
+ 8. Registrar recepción
+ 9. Consultar solicitudes
+10. Consultar inventario
+11. Limpiar historial de solicitudes
+ 0. Salir
+==================================================
+Seleccione una opción: Ingrese la clave del medicamento (4 dígitos): Error: formato inválido — la clave debe tener exactamente 4 dígitos.
+Ingrese la clave del medicamento (4 dígitos): Error: formato inválido — la clave debe tener exactamente 4 dígitos.
+Ingrese la clave del medicamento (4 dígitos): Error: formato inválido — la clave debe tener exactamente 4 dígitos.
+Demasiados intentos. Operación cancelada.
+
+Presione ENTER para continuar...
+
+==================================================
+              SMART CENDIS
+==================================================
+Sistema de Gestión Digital de Solicitudes,
+Abastecimiento y Control de Inventario
+==================================================
+
+ 1. Registrar medicamento
+ 2. Consultar medicamentos
+ 3. Modificar medicamento
+ 4. Desactivar medicamento
+ 5. Consultar paciente
+ 6. Registrar solicitud
+ 7. Procesar solicitud
+ 8. Registrar recepción
+ 9. Consultar solicitudes
+10. Consultar inventario
+11. Limpiar historial de solicitudes
+ 0. Salir
+==================================================
+Seleccione una opción: 
+--- STDERR ---
+Traceback (most recent call last):
+  File "C:\Users\Asjer\OneDrive\Desktop\Laboratorio\smartCendis_v3.py", line 1425, in <module>
+    menu_principal()
+  File "C:\Users\Asjer\OneDrive\Desktop\Laboratorio\smartCendis_v3.py", line 1382, in menu_principal
+    opcion = leer_con_patron(
+             ^^^^^^^^^^^^^^^^
+  File "C:\Users\Asjer\OneDrive\Desktop\Laboratorio\smartCendis_v3.py", line 149, in leer_con_patron
+    entrada = input(prompt).strip()
+              ^^^^^^^^^^^^^
+EOFError: EOF when reading a line

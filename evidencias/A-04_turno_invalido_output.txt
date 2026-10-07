@@ -1,0 +1,85 @@
+=== A-04_turno_invalido: Validación: opción de turno 1-3 ===
+Input sequence: '6\nPediatria\n01\nParacetamol\n1\n5\n4\n5\n0\nEnf Test\n1\n0\n'
+
+
+
+==================================================
+              SMART CENDIS
+==================================================
+Sistema de Gestión Digital de Solicitudes,
+Abastecimiento y Control de Inventario
+==================================================
+
+ 1. Registrar medicamento
+ 2. Consultar medicamentos
+ 3. Modificar medicamento
+ 4. Desactivar medicamento
+ 5. Consultar paciente
+ 6. Registrar solicitud
+ 7. Procesar solicitud
+ 8. Registrar recepción
+ 9. Consultar solicitudes
+10. Consultar inventario
+11. Limpiar historial de solicitudes
+ 0. Salir
+==================================================
+Seleccione una opción: 
+========== NUEVA SOLICITUD ==========
+Ingrese el servicio: Ingrese la cama: 
+Paciente encontrado: Paciente de prueba 001
+NSS: 00000000001
+
+Ingrese el nombre del medicamento: 
+========== MEDICAMENTOS ENCONTRADOS ==========
+1. Paracetamol 1 g (Solucion inyectable)
+Seleccione una opción: 
+Medicamento seleccionado: Paracetamol 1 g
+Clave: 5121
+Stock actual: 26
+Ingrese la cantidad solicitada: 
+Seleccione el turno:
+1. Matutino
+2. Vespertino
+3. Nocturno
+Seleccione una opción: Error: formato inválido — ingrese 1, 2 o 3.
+Seleccione una opción: Error: formato inválido — ingrese 1, 2 o 3.
+Seleccione una opción: Error: formato inválido — ingrese 1, 2 o 3.
+Demasiados intentos. Operación cancelada.
+
+Presione ENTER para continuar...
+
+==================================================
+              SMART CENDIS
+==================================================
+Sistema de Gestión Digital de Solicitudes,
+Abastecimiento y Control de Inventario
+==================================================
+
+ 1. Registrar medicamento
+ 2. Consultar medicamentos
+ 3. Modificar medicamento
+ 4. Desactivar medicamento
+ 5. Consultar paciente
+ 6. Registrar solicitud
+ 7. Procesar solicitud
+ 8. Registrar recepción
+ 9. Consultar solicitudes
+10. Consultar inventario
+11. Limpiar historial de solicitudes
+ 0. Salir
+==================================================
+Seleccione una opción: Ingrese la clave del medicamento (4 dígitos): Error: formato inválido — la clave debe tener exactamente 4 dígitos.
+Ingrese la clave del medicamento (4 dígitos): 
+--- STDERR ---
+Traceback (most recent call last):
+  File "C:\Users\Asjer\OneDrive\Desktop\Laboratorio\smartCendis_v3.py", line 1425, in <module>
+    menu_principal()
+  File "C:\Users\Asjer\OneDrive\Desktop\Laboratorio\smartCendis_v3.py", line 1414, in menu_principal
+    accion()
+  File "C:\Users\Asjer\OneDrive\Desktop\Laboratorio\smartCendis_v3.py", line 455, in registrar_medicamento
+    clave = leer_con_patron(
+            ^^^^^^^^^^^^^^^^
+  File "C:\Users\Asjer\OneDrive\Desktop\Laboratorio\smartCendis_v3.py", line 149, in leer_con_patron
+    entrada = input(prompt).strip()
+              ^^^^^^^^^^^^^
+EOFError: EOF when reading a line

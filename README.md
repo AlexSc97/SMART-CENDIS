@@ -190,29 +190,60 @@ Al ejecutar el programa se despliega la interfaz interactiva de consola:
 
 ---
 
-## 🧪 Pruebas Unitarias Automatizadas
+---
 
-El proyecto incluye una suite completa de pruebas unitarias que validan la lógica de negocio, validaciones de entrada, cálculos de stock y persistencia en disco:
+## 🌐 Plataforma Web Interactiva (SPA)
 
-Para ejecutar todas las pruebas automatizadas:
+Para una experiencia visual académica y moderna, el sistema incluye una aplicación web de una sola página (**Single Page Application**):
+- **Archivo principal:** [`index.html`](index.html) (o [`smartcendis_web.html`](smartcendis_web.html)).
+- **Dashboard en tiempo real:** KPIs de inventario, alertas de stock bajo (<30%), estado de solicitudes y métricas de dispensación.
+- **Módulos completos:** Catálogo de medicamentos, censo de pacientes, solicitudes con validación regex en cliente, procesamiento de farmacia y recepción física en piso.
+- **Persistencia local:** Utiliza `localStorage` sincronizado y reactivo.
 
+Para visualizarla, basta con abrir `index.html` en cualquier navegador web moderno.
+
+---
+
+## 🚀 SMART CENDIS v3 (Etapa 3 - Auditoría y Robustez)
+
+El script [`smartCendis_v3.py`](smartCendis_v3.py) implementa todas las observaciones técnicas y de rúbrica de la Etapa 3:
+1. **Validación Exhaustiva con Expresiones Regulares (`[REG-01]`):**
+   - 16 patrones compilados (`RE_MENU`, `RE_CLAVE_MED`, `RE_NOMBRE_MED`, `RE_FOLIO`, etc.) con validación estricta vía `re.fullmatch()`.
+2. **Persistencia Atómica con Rollback (`[PER-01]`):**
+   - Verificación del estado de retorno en `guardar_datos()` y reversión de cambios en memoria si la escritura en disco falla.
+3. **Validación y Coherencia de Esquema (`[PER-02]`):**
+   - Detección de estados y cantidades inconsistentes en JSON y corrección automática de desfases en el contador de folios.
+4. **Normalización de Entradas (`[VAL-01]`, `[VAL-02]`):**
+   - Eliminación de espacios, normalización mayúsculas/minúsculas y soporte de folios ilimitados `SOL-XXXX`.
+
+---
+
+## 🧪 Pruebas Unitarias y Automatizadas
+
+El proyecto cuenta con múltiples suites de validación y aseguramiento de calidad:
+
+### 1. Suite de Pruebas Unitarias (Estándar):
 ```bash
 python -m unittest discover -s tests
 ```
+*12 pruebas unitarias de lógica central de persistencia y operaciones.*
 
-### Cobertura de las pruebas:
-- `test_buscar_medicamento_existente`: Localización por clave institucional.
-- `test_buscar_medicamento_inexistente`: Manejo de claves no registradas.
-- `test_registrar_medicamento_exitoso`: Alta de nuevo fármaco en catálogo.
-- `test_registrar_medicamento_clave_duplicada`: Prevención de duplicados.
-- `test_modificar_medicamento_exitoso`: Actualización de stock objetivo y nombre.
-- `test_eliminar_medicamento_logico`: Verificación de baja lógica (`activo = False`).
-- `test_buscar_paciente_existente`: Búsqueda insensible a mayúsculas/minúsculas.
-- `test_buscar_paciente_inexistente`: Validación de servicio y cama sin paciente.
-- `test_registrar_solicitud_exitosa`: Registro y cálculo de cantidades iniciales.
-- `test_procesar_solicitud_surtida_farmacia`: Cambio de estado en Farmacia.
-- `test_registrar_recepcion_parcial`: Actualización de stock y estado `SURTIDA_PARCIAL`.
-- `test_guardar_y_cargar_datos`: Prueba de serialización y deserialización JSON atómica.
+### 2. Suite Automatizada Etapa 3 (44 Casos):
+```bash
+python test_smartCendis_v3.py
+```
+- **Grupo A (14 casos):** Validaciones de formato con expresiones regulares.
+- **Grupo B (19 casos):** Regresión de flujo funcional completo (Solicitud → Surtido → Recepción).
+- **Grupo C (6 casos):** Robustez ante JSON corrupto, stock negativo y reversión.
+- **Grupo D (5 casos):** Coherencia de folios y contador.
+
+### 3. Ejecutor con Generación de Evidencias y Capturas:
+```bash
+python run_tests.py
+python capturar_evidencias.py
+```
+- Reportes textuales guardados en [`evidencias/`](evidencias/).
+- Capturas de terminal renderizadas en alta resolución en [`capturas reales/`](capturas%20reales/).
 
 ---
 

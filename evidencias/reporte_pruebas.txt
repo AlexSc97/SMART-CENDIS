@@ -1,0 +1,333 @@
+======================================================================
+SMART CENDIS — Reporte de Pruebas Automatizadas
+Generado: 2026-10-07 15:52:19
+Total: 44  |  PASS: 44  |  FAIL/ERROR: 0
+======================================================================
+
+[PASS] ✓  A-01  —  Clave con 3 dígitos rechazada
+  Esperado : Error: formato inválido
+  Obtenido : Error: formato inválido — la clave debe tener exactamente 4 dígitos.
+         Error: formato inválido — la clave debe tener exactamente 4 dígitos.
+         Error: formato inválido — la clave debe tener exactamente 4 dígitos.
+         Demasiados intentos. Operación cancelada.
+
+[PASS] ✓  A-02  —  Clave con letras rechazada
+  Esperado : Error: formato inválido
+  Obtenido : Error: formato inválido — la clave debe tener exactamente 4 dígitos.
+         Error: formato inválido — la clave debe tener exactamente 4 dígitos.
+         Error: formato inválido — la clave debe tener exactamente 4 dígitos.
+         Demasiados intentos. Operación cancelada.
+
+[PASS] ✓  A-03  —  Nombre vacío rechazado
+  Esperado : Error: formato inválido
+  Obtenido : Error: formato inválido — nombre inválido (2–120 caracteres; letras, dígitos y signos básicos).
+         Error: formato inválido — nombre inválido (2–120 caracteres; letras, dígitos y signos básicos).
+         Error: formato inválido — nombre inválido (2–120 caracteres; letras, dígitos y signos básicos).
+         Demasiados intentos. Operación cancelada.
+
+[PASS] ✓  A-04  —  Stock negativo rechazado por regex
+  Esperado : Error: formato inválido
+  Obtenido : Error: formato inválido — el stock debe ser un número entero no negativo.
+         Error: formato inválido — el stock debe ser un número entero no negativo.
+         Error: formato inválido — el stock debe ser un número entero no negativo.
+         Demasiados intentos. Operación cancelada.
+
+[PASS] ✓  A-05  —  Folio sin prefijo SOL- rechazado
+  Esperado : Error: formato inválido
+  Obtenido : ========== PROCESAR SOLICITUD ==========
+         Error: formato inválido — el folio debe tener el formato SOL-NNNN (al menos 4 dígitos).
+         Error: formato inválido — el folio debe tener el formato SOL-NNNN (al menos 4 dígitos).
+         Error: formato inválido — el folio debe tener el formato SOL-NNNN (al menos 4 dígitos).
+         Demasiados intentos. Operación cancelada.
+
+[PASS] ✓  A-06  —  Folio SOL-12 (< 4 dígitos) rechazado
+  Esperado : Error: formato inválido
+  Obtenido : ========== PROCESAR SOLICITUD ==========
+         Error: formato inválido — el folio debe tener el formato SOL-NNNN (al menos 4 dígitos).
+         Error: formato inválido — el folio debe tener el formato SOL-NNNN (al menos 4 dígitos).
+         Error: formato inválido — el folio debe tener el formato SOL-NNNN (al menos 4 dígitos).
+         Demasiados intentos. Operación cancelada.
+
+[PASS] ✓  A-07  —  Servicio con dígitos rechazado
+  Esperado : Error: formato inválido
+  Obtenido : Error: formato inválido — servicio inválido (letras y espacios, 2–60 caracteres).
+         Error: formato inválido — servicio inválido (letras y espacios, 2–60 caracteres).
+         Error: formato inválido — servicio inválido (letras y espacios, 2–60 caracteres).
+         Demasiados intentos. Operación cancelada.
+
+[PASS] ✓  A-08  —  Cama con letras rechazada
+  Esperado : Error: formato inválido
+  Obtenido : Error: formato inválido — cama inválida (1–4 dígitos).
+         Error: formato inválido — cama inválida (1–4 dígitos).
+         Error: formato inválido — cama inválida (1–4 dígitos).
+         Demasiados intentos. Operación cancelada.
+
+[PASS] ✓  A-09  —  Turno 4 rechazado
+  Esperado : Error: formato inválido
+  Obtenido : Seleccione el turno:
+         1. Matutino
+         2. Vespertino
+         3. Nocturno
+         Error: formato inválido — ingrese 1, 2 o 3.
+         Error: formato inválido — ingrese 1, 2 o 3.
+         Error: formato inválido — ingrese 1, 2 o 3.
+         Demasiados intentos. Operación cancelada.
+
+[PASS] ✓  A-10  —  Usuario vacío rechazado
+  Esperado : Error: formato inválido
+  Obtenido : ========== NUEVA SOLICITUD ==========
+         
+         Paciente encontrado: Paciente de prueba 001
+         NSS: 00000000001
+         
+         ========== MEDICAMENTOS ENCONTRADOS ==========
+         1. Paracetamol 1 g (Solucion inyectable)
+         
+         Medicamento seleccionado: Paracetamol 1 g
+         Clave: 5121
+
+[PASS] ✓  A-11  —  Opción 12 en menú rechazada
+  Esperado : Error: formato inválido
+  Obtenido : Error: formato inválido — ingrese un número entre 0 y 11.
+         Error: formato inválido — ingrese un número entre 0 y 11.
+         Error: formato inválido — ingrese un número entre 0 y 11.
+         Demasiados intentos. Operación cancelada.
+
+[PASS] ✓  A-12  —  Confirmación 'X' en desactivar rechazada
+  Esperado : Error: formato inválido
+  Obtenido : Error: formato inválido — responda S o N.
+         Error: formato inválido — responda S o N.
+         Error: formato inválido — responda S o N.
+         Demasiados intentos. Operación cancelada.
+
+[PASS] ✓  A-13  —  Cantidad solicitada 0 rechazada por regex
+  Esperado : Error: formato inválido
+  Obtenido : ========== NUEVA SOLICITUD ==========
+         
+         Paciente encontrado: Paciente de prueba 001
+         NSS: 00000000001
+         
+         ========== MEDICAMENTOS ENCONTRADOS ==========
+         1. Paracetamol 1 g (Solucion inyectable)
+         
+         Medicamento seleccionado: Paracetamol 1 g
+         Clave: 5121
+
+[PASS] ✓  A-14  —  Cantidad recibida 'diez' rechazada
+  Esperado : Error: formato inválido
+  Obtenido : ========== REGISTRAR RECEPCIÓN ==========
+         
+         ========== SOLICITUD ==========
+         Folio: SOL-0001
+         Servicio: Pediatria
+         Cama: 01
+         Paciente: Paciente de prueba 001
+         NSS: 00000000001
+         Medicamento: Paracetamol 1 g
+         Clave: 5121
+
+[PASS] ✓  B-01  —  Registro de medicamento válido
+  Esperado : registrado correctamente
+  Obtenido : Medicamento registrado correctamente.
+
+[PASS] ✓  B-02  —  Clave duplicada rechazada
+  Esperado : ya se encuentra registrada
+  Obtenido : Error: la clave ya se encuentra registrada.
+
+[PASS] ✓  B-03  —  Consulta paciente existente
+  Esperado : Paciente encontrado
+  Obtenido : Paciente encontrado.
+         Servicio: Pediatria
+         Cama: 01
+         Nombre: Paciente de prueba 001
+         NSS: 00000000001
+
+[PASS] ✓  B-04  —  Consulta paciente inexistente
+  Esperado : No se encontró
+  Obtenido : No se encontró un paciente para el servicio y cama indicados.
+
+[PASS] ✓  B-05  —  Solicitud registrada correctamente
+  Esperado : registrada correctamente
+  Obtenido : ========== NUEVA SOLICITUD ==========
+         
+         Paciente encontrado: Paciente de prueba 001
+         NSS: 00000000001
+         
+         ========== MEDICAMENTOS ENCONTRADOS ==========
+         1. Paracetamol 1 g (Solucion inyectable)
+         
+         Medicamento seleccionado: Paracetamol 1 g
+         Clave: 5121
+
+[PASS] ✓  B-06  —  Turno Matutino seleccionado
+  Esperado : MATUTINO
+  Obtenido : Seleccione el turno:
+         1. Matutino
+         2. Vespertino
+         3. Nocturno
+         MATUTINO
+
+[PASS] ✓  B-07  —  Turno Vespertino seleccionado
+  Esperado : VESPERTINO
+  Obtenido : Seleccione el turno:
+         1. Matutino
+         2. Vespertino
+         3. Nocturno
+         VESPERTINO
+
+[PASS] ✓  B-08  —  Turno Nocturno seleccionado
+  Esperado : NOCTURNO
+  Obtenido : Seleccione el turno:
+         1. Matutino
+         2. Vespertino
+         3. Nocturno
+         NOCTURNO
+
+[PASS] ✓  B-09  —  Solicitud PENDIENTE → SURTIDA
+  Esperado : SURTIDA
+  Obtenido : ========== PROCESAR SOLICITUD ==========
+         
+         ========== SOLICITUD ==========
+         Folio: SOL-0001
+         Servicio: Pediatria
+         Cama: 01
+         Paciente: Paciente de prueba 001
+         NSS: 00000000001
+         Medicamento: Paracetamol 1 g
+         Clave: 5121
+
+[PASS] ✓  B-10  —  Recepción total actualiza stock
+  Esperado : Stock nuevo: 31
+  Obtenido : ========== REGISTRAR RECEPCIÓN ==========
+         
+         ========== SOLICITUD ==========
+         Folio: SOL-0001
+         Servicio: Pediatria
+         Cama: 01
+         Paciente: Paciente de prueba 001
+         NSS: 00000000001
+         Medicamento: Paracetamol 1 g
+         Clave: 5121
+
+[PASS] ✓  B-11  —  Recepción parcial → SURTIDA_PARCIAL
+  Esperado : SURTIDA_PARCIAL
+  Obtenido : ========== REGISTRAR RECEPCIÓN ==========
+         
+         ========== SOLICITUD ==========
+         Folio: SOL-0002
+         Servicio: Urgencias
+         Cama: 01
+         Paciente: Paciente de prueba 004
+         NSS: 00000000004
+         Medicamento: Paracetamol 1 g
+         Clave: 5121
+
+[PASS] ✓  B-12  —  Recepción de solicitud NEGADA rechazada
+  Esperado : solo se puede recibir una solicitud surtida
+  Obtenido : ========== REGISTRAR RECEPCIÓN ==========
+         
+         ========== SOLICITUD ==========
+         Folio: SOL-0003
+         Servicio: Pediatria
+         Cama: 02
+         Paciente: Paciente de prueba 002
+         NSS: 00000000002
+         Medicamento: Paracetamol 1 g
+         Clave: 5121
+
+[PASS] ✓  B-13  —  Modificación de medicamento
+  Esperado : modificado correctamente
+  Obtenido : Medicamento encontrado:
+           Nombre actual      : Paracetamol 1 g
+           Stock objetivo actual: 30
+         Medicamento modificado correctamente.
+
+[PASS] ✓  B-14  —  Desactivación de medicamento
+  Esperado : desactivado correctamente
+  Obtenido : Medicamento desactivado correctamente.
+
+[PASS] ✓  B-15  —  Medicamento desactivado no aparece en búsqueda
+  Esperado : No hay medicamentos disponibles
+  Obtenido : No hay medicamentos disponibles.
+
+[PASS] ✓  B-16  —  Limpiar historial confirmado
+  Esperado : eliminado correctamente
+  Obtenido : Historial de solicitudes eliminado correctamente.
+
+[PASS] ✓  B-17  —  Limpieza cancelada con 'n'
+  Esperado : cancelada
+  Obtenido : Limpieza cancelada.
+
+[PASS] ✓  B-18  —  Inventario muestra medicamento activo
+  Esperado : Paracetamol
+  Obtenido : ========== INVENTARIO ACTUAL ==========
+         --------------------------------------------------
+         Clave: 5121
+         Medicamento: Paracetamol 1 g
+         Presentación: Solucion inyectable
+         Unidad física: Ampolleta
+         Stock actual: 26
+         Stock objetivo: 30
+         Faltante para stock objetivo: 4
+         --------------------------------------------------
+
+[PASS] ✓  B-19  —  Flujo completo: solicitud → SURTIDA → recepción
+  Esperado : Stock nuevo: 29
+  Obtenido : ========== PROCESAR SOLICITUD ==========
+         
+         ========== SOLICITUD ==========
+         Folio: SOL-0001
+         Servicio: Medicina Interna
+         Cama: 01
+         Paciente: Paciente de prueba 003
+         NSS: 00000000003
+         Medicamento: Paracetamol 1 g
+         Clave: 5121
+
+[PASS] ✓  C-01  —  JSON corrupto → se conservan datos iniciales
+  Esperado : datos iniciales conservados
+  Obtenido : clave medicamento: 5121
+
+[PASS] ✓  C-02  —  Sin archivo JSON → datos iniciales en memoria
+  Esperado : 1 medicamento, contador=1
+  Obtenido : 1 medicamentos, contador=1
+
+[PASS] ✓  C-03  —  guardar_datos() retorna True en condiciones normales
+  Esperado : True
+  Obtenido : True
+
+[PASS] ✓  C-04  —  Persistencia entre sesiones (guardar → cargar)
+  Esperado : 1 solicitud SOL-0001, contador=2
+  Obtenido : 1 solicitud(es), folio=SOL-0001, contador=2
+
+[PASS] ✓  C-05  —  Estado inválido en JSON → datos iniciales conservados
+  Esperado : 0 solicitudes (datos iniciales)
+  Obtenido : 0 solicitudes
+
+[PASS] ✓  C-06  —  Stock negativo en JSON → datos iniciales conservados
+  Esperado : stock_actual=26 (inicial)
+  Obtenido : stock_actual=26
+
+[PASS] ✓  D-01  —  Contador atrasado se ajusta al cargar datos
+  Esperado : contador=6
+  Obtenido : contador=6
+
+[PASS] ✓  D-02  —  Folio SOL-0002 generado tras SOL-0001
+  Esperado : SOL-0002
+  Obtenido : SOL-0002
+
+[PASS] ✓  D-03  —  Folio SOL-10000 válido (sin límite superior)
+  Esperado : SOL-10000
+  Obtenido : SOL-10000
+
+[PASS] ✓  D-04  —  RE_FOLIO acepta SOL-10000
+  Esperado : match
+  Obtenido : match
+
+[PASS] ✓  D-05  —  RE_FOLIO rechaza SOL-12 (< 4 dígitos)
+  Esperado : no match
+  Obtenido : no match
+
+======================================================================
+Resumen final: 44/44 pruebas pasaron.
+======================================================================

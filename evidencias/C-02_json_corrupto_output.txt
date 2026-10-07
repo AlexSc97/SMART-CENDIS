@@ -1,0 +1,28 @@
+=== C-02_json_corrupto: JSON corrupto -> datos iniciales ===
+Input sequence: '0\n'
+
+
+
+==================================================
+              SMART CENDIS
+==================================================
+Sistema de Gestión Digital de Solicitudes,
+Abastecimiento y Control de Inventario
+==================================================
+
+ 1. Registrar medicamento
+ 2. Consultar medicamentos
+ 3. Modificar medicamento
+ 4. Desactivar medicamento
+ 5. Consultar paciente
+ 6. Registrar solicitud
+ 7. Procesar solicitud
+ 8. Registrar recepción
+ 9. Consultar solicitudes
+10. Consultar inventario
+11. Limpiar historial de solicitudes
+ 0. Salir
+==================================================
+Seleccione una opción: 
+Saliendo de SMART CENDIS...
+Sistema finalizado correctamente.

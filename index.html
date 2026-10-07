@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SMART CENDIS — Sistema de Gestión Hospitalaria</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    /* ── Transiciones y animaciones ── */
+    .fade-in { animation: fadeIn 0.25s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+    .slide-in { animation: slideIn 0.2s ease; }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
+
+    /* ── Sidebar nav item ── */
+    .nav-item { transition: background 0.15s, border-color 0.15s, color 0.15s; }
+    .nav-item.active {
+      background: var(--primary);
+      color: var(--primary-foreground);
+      border-left: 3px solid color-mix(in srgb, var(--primary) 60%, white);
+    }
+    .nav-item:not(.active):hover { background: color-mix(in srgb, var(--primary) 12%, transparent); }
+
+    /* ── KPI card ── */
+    .kpi-card { transition: transform 0.15s, box-shadow 0.15s; }
+    .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px color-mix(in srgb, var(--primary) 15%, transparent); }
+
+    /* ── Table ── */
+    .sc-table thead { background: color-mix(in srgb, var(--primary) 8%, transparent); }
+    .sc-table tbody tr { transition: background 0.1s; border-bottom: 1px solid var(--border); }
+    .sc-table tbody tr:hover { background: color-mix(in srgb, var(--primary) 5%, transparent); }
+
+    /* ── Badge ── */
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; letter-spacing: 0.03em; }
+    .badge-green  { background: #dcfce7; color: #15803d; }
+    .badge-red    { background: #fee2e2; color: #b91c1c; }
+    .badge-yellow { background: #fef9c3; color: #854d0e; }
+    .badge-blue   { background: #dbeafe; color: #1d4ed8; }
+    .badge-gray   { background: color-mix(in srgb, var(--border) 60%, transparent); color: var(--muted-foreground); }
+
+    /* Dark-mode badge tweaks */
+    html.dark .badge-green  { background: #14532d; color: #86efac; }
+    html.dark .badge-red    { background: #450a0a; color: #fca5a5; }
+    html.dark .badge-yellow { background: #422006; color: #fde68a; }
+    html.dark .badge-blue   { background: #1e3a5f; color: #93c5fd; }
+
+    /* ── Input / Select ── */
+    .sc-input {
+      width: 100%;
+      background: var(--background);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
+      color: var(--foreground);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .sc-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent); }
+    .sc-input.error { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,0.15); }
+
+    /* ── Button ── */
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.15s, transform 0.1s; border: none; }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: var(--primary); color: var(--primary-foreground); }
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-secondary { background: color-mix(in srgb, var(--border) 70%, transparent); color: var(--foreground); }
+    .btn-secondary:hover { opacity: 0.78; }
+    .btn-danger  { background: #ef4444; color: #fff; }
+    .btn-danger:hover { opacity: 0.85; }
+    .btn-success { background: #16a34a; color: #fff; }
+    .btn-success:hover { opacity: 0.85; }
+    .btn-sm { padding: 5px 12px; font-size: 13px; border-radius: 6px; }
+
+    /* ── Modal ── */
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(2px); z-index: 50; display: flex; align-items: center; justify-content: center; }
+    .modal-box { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; width: min(540px, 94vw); max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,0.3); animation: fadeIn 0.2s ease; }
+
+    /* ── Progress bar ── */
+    .progress-bar { height: 6px; border-radius: 999px; overflow: hidden; background: color-mix(in srgb, var(--border) 80%, transparent); }
+    .progress-fill { height: 100%; border-radius: 999px; transition: width 0.4s ease; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+
+    /* ── Toast ── */
+    #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 100; display: flex; flex-direction: column; gap: 8px; }
+    .toast { padding: 12px 18px; border-radius: 10px; font-size: 14px; font-weight: 500; max-width: 320px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); animation: slideIn 0.25s ease; }
+    .toast-success { background: #15803d; color: #fff; }
+    .toast-error   { background: #b91c1c; color: #fff; }
+    .toast-info    { background: var(--primary); color: var(--primary-foreground); }
+
+    /* ── Logo pulse ── */
+    .logo-dot { animation: pulse 2.4s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    /* ── Section header ── */
+    .section-header { border-bottom: 2px solid color-mix(in srgb, var(--primary) 20%, transparent); padding-bottom: 12px; margin-bottom: 20px; }
+
+    /* ── Empty state ── */
+    .empty-state { text-align: center; padding: 48px 24px; color: var(--muted-foreground); }
+
+    /* ── Stat mini-chart bar ── */
+    .mini-bar { height: 3px; border-radius: 2px; }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased" style="margin:0;padding:0;min-height:100vh;font-family:inherit;">
+
+<!-- ═══════════════════════════════════════════════════
+     APP SHELL
+══════════════════════════════════════════════════════ -->
+<div id="app" class="flex min-h-screen">
+
+  <!-- ── SIDEBAR ── -->
+  <aside id="sidebar" class="w-64 shrink-0 flex flex-col border-r border-[var(--border)]" style="background:var(--sidebar,var(--card));min-height:100vh;">
+
+    <!-- Logo -->
+    <div class="px-5 py-5 border-b border-[var(--border)]">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:var(--primary);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-foreground)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-bold text-sm leading-tight" style="color:var(--foreground);">SMART CENDIS</p>
+          <p class="text-xs" style="color:var(--muted-foreground);">Gestión Hospitalaria</p>
+        </div>
+        <span class="logo-dot ml-auto w-2 h-2 rounded-full bg-green-500 shrink-0"></span>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 px-3 py-4 flex flex-col gap-1 overflow-y-auto">
+      <p class="px-2 text-xs font-semibold uppercase tracking-widest mb-2" style="color:var(--muted-foreground);">Principal</p>
+      <button onclick="goTo('dashboard')" class="nav-item active w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center gap-3" data-page="dashboard">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </button>
+
+      <p class="px-2 text-xs font-semibold uppercase tracking-widest mt-4 mb-2" style="color:var(--muted-foreground);">Módulos</p>
+      <button onclick="goTo('medicamentos')" class="nav-item w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center gap-3" data-page="medicamentos">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Medicamentos
+      </button>
+      <button onclick="goTo('pacientes')" class="nav-item w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center gap-3" data-page="pacientes">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Pacientes
+      </button>
+      <button onclick="goTo('solicitudes')" class="nav-item w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center gap-3" data-page="solicitudes">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Solicitudes
+      </button>
+      <button onclick="goTo('inventario')" class="nav-item w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center gap-3" data-page="inventario">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Inventario
+      </button>
+
+      <p class="px-2 text-xs font-semibold uppercase tracking-widest mt-4 mb-2" style="color:var(--muted-foreground);">Operaciones</p>
+      <button onclick="goTo('procesar')" class="nav-item w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center gap-3" data-page="procesar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Procesar Solicitud
+      </button>
+      <button onclick="goTo('recepcion')" class="nav-item w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center gap-3" data-page="recepcion">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Recepción Física
+      </button>
+    </nav>
+
+    <!-- Footer info -->
+    <div class="px-5 py-4 border-t border-[var(--border)]">
+      <p class="text-xs" style="color:var(--muted-foreground);">Etapa 3 — v3.0.0</p>
+      <p class="text-xs" style="color:var(--muted-foreground);">Sistema Hospitalario Digital</p>
+    </div>
+  </aside>
+
+  <!-- ── MAIN CONTENT ── -->
+  <main class="flex-1 flex flex-col overflow-hidden">
+
+    <!-- Top bar -->
+    <header class="flex items-center justify-between px-8 py-4 border-b border-[var(--border)]" style="background:var(--card);">
+      <div>
+        <h1 id="page-title" class="text-lg font-bold" style="color:var(--foreground);">Dashboard</h1>
+        <p id="page-sub" class="text-sm" style="color:var(--muted-foreground);">Resumen del sistema en tiempo real</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <span id="clock" class="text-sm font-mono" style="color:var(--muted-foreground);"></span>
+        <button onclick="resetData()" class="btn btn-secondary btn-sm">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+          Reiniciar
+        </button>
+      </div>
+    </header>
+
+    <!-- Page content -->
+    <div id="content" class="flex-1 overflow-y-auto p-8 fade-in"></div>
+  </main>
+</div>
+
+<!-- ── MODAL ── -->
+<div id="modal" class="modal-backdrop hidden" onclick="closeModalBackdrop(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="flex items-center justify-between mb-5">
+      <h3 id="modal-title" class="text-base font-bold" style="color:var(--foreground);"></h3>
+      <button onclick="closeModal()" class="w-7 h-7 rounded-full flex items-center justify-center hover:opacity-70 transition-opacity" style="background:var(--border);">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ── TOAST CONTAINER ── -->
+<div id="toast-container"></div>
+
+<!-- ═══════════════════════════════════════════════════
+     APPLICATION LOGIC
+══════════════════════════════════════════════════════ -->
+<script>
+// ──────────────────────────────────────────────────
+//  STATE & PERSISTENCE
+// ──────────────────────────────────────────────────
+const STORAGE_KEY = 'smartcendis_v3';
+
+const INITIAL_STATE = {
+  medicamentos: [
+    { clave:'5121', nombre:'Paracetamol 1 g', presentacion:'Solucion inyectable', unidad_fisica:'Ampolleta', stock_actual:26, stock_objetivo:30, activo:true },
+    { clave:'5090', nombre:'Ibuprofeno 400 mg', presentacion:'Comprimido recubierto', unidad_fisica:'Tableta', stock_actual:14, stock_objetivo:50, activo:true },
+    { clave:'3310', nombre:'Amoxicilina 500 mg', presentacion:'Capsula dura', unidad_fisica:'Capsula', stock_actual:80, stock_objetivo:100, activo:true },
+    { clave:'2214', nombre:'Omeprazol 20 mg', presentacion:'Capsula gastrorresistente', unidad_fisica:'Capsula', stock_actual:55, stock_objetivo:60, activo:true },
+    { clave:'4410', nombre:'Metformina 850 mg', presentacion:'Comprimido', unidad_fisica:'Tableta', stock_actual:0, stock_objetivo:40, activo:false }
+  ],
+  pacientes: [
+    { servicio:'Pediatria',        cama:'01', nombre:'Paciente de prueba 001', nss:'00000000001' },
+    { servicio:'Pediatria',        cama:'02', nombre:'Paciente de prueba 002', nss:'00000000002' },
+    { servicio:'Medicina Interna', cama:'01', nombre:'Paciente de prueba 003', nss:'00000000003' },
+    { servicio:'Urgencias',        cama:'01', nombre:'Paciente de prueba 004', nss:'00000000004' },
+  ],
+  solicitudes: [],
+  contador: 1
+};
+
+let state = loadState();
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(INITIAL_STATE));
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function resetData() {
+  if (!confirm('¿Reiniciar todos los datos al estado inicial?')) return;
+  state = JSON.parse(JSON.stringify(INITIAL_STATE));
+  saveState();
+  toast('Datos reiniciados correctamente.', 'success');
+  renderPage(currentPage);
+}
+
+// ──────────────────────────────────────────────────
+//  ROUTING
+// ──────────────────────────────────────────────────
+let currentPage = 'dashboard';
+const PAGE_TITLES = {
+  dashboard:    ['Dashboard', 'Resumen del sistema en tiempo real'],
+  medicamentos: ['Catálogo de Medicamentos', 'Gestión del inventario farmacológico'],
+  pacientes:    ['Consulta de Pacientes', 'Búsqueda por servicio y cama'],
+  solicitudes:  ['Solicitudes', 'Registro y seguimiento de solicitudes'],
+  inventario:   ['Inventario', 'Stock actual vs. objetivo'],
+  procesar:     ['Procesar Solicitud', 'Respuesta de farmacia'],
+  recepcion:    ['Recepción Física', 'Confirmar unidades recibidas'],
+};
+
+function goTo(page) {
+  currentPage = page;
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.page === page);
+  });
+  const [title, sub] = PAGE_TITLES[page] || ['', ''];
+  document.getElementById('page-title').textContent = title;
+  document.getElementById('page-sub').textContent   = sub;
+  renderPage(page);
+}
+
+function renderPage(page) {
+  const el = document.getElementById('content');
+  el.innerHTML = '';
+  el.className = 'flex-1 overflow-y-auto p-8 fade-in';
+  const fns = { dashboard, medicamentos, pacientes, solicitudes, inventario, procesar, recepcion };
+  if (fns[page]) el.innerHTML = fns[page]();
+  attachEvents(page);
+}
+
+// ──────────────────────────────────────────────────
+//  REGEX VALIDATION
+// ──────────────────────────────────────────────────
+const RE = {
+  clave:        /^\d{4}$/,
+  nombre:       /^[\w\s\(\)\.\,\%\/\-áéíóúüñÁÉÍÓÚÜÑ]{2,120}$/,
+  presentacion: /^[\w\s\(\)\.\,\%\/\-áéíóúüñÁÉÍÓÚÜÑ]{2,80}$/,
+  unidad:       /^[A-Za-záéíóúüñÁÉÍÓÚÜÑ][A-Za-záéíóúüñÁÉÍÓÚÜÑ\s]{1,39}$/,
+  stock:        /^(0|[1-9]\d*)$/,
+  servicio:     /^[A-Za-záéíóúüñÁÉÍÓÚÜÑ][A-Za-záéíóúüñÁÉÍÓÚÜÑ\s]{1,59}$/,
+  cama:         /^\d{1,4}$/,
+  busqueda:     /^[\w\s\.\-áéíóúüñÁÉÍÓÚÜÑ]{1,60}$/,
+  cantidadPos:  /^[1-9]\d*$/,
+  cantidadGe0:  /^(0|[1-9]\d*)$/,
+  usuario:      /^[\w\s\.\-áéíóúüñÁÉÍÓÚÜÑ]{2,60}$/,
+  folio:        /^SOL-\d{4,}$/,
+};
+
+function validate(inputEl, pattern) {
+  const ok = pattern.test(inputEl.value.trim());
+  inputEl.classList.toggle('error', !ok);
+  return ok;
+}
+
+function fieldVal(id) { return document.getElementById(id)?.value.trim() || ''; }
+
+// ──────────────────────────────────────────────────
+//  HELPERS — UI
+// ──────────────────────────────────────────────────
+function badge(estado) {
+  const map = {
+    PENDIENTE:      ['badge-yellow', '⏳ Pendiente'],
+    SURTIDA:        ['badge-green',  '✓ Surtida'],
+    SURTIDA_PARCIAL:['badge-blue',   '⚡ Parcial'],
+    NEGADA:         ['badge-red',    '✕ Negada'],
+    ACTIVO:         ['badge-green',  '● Activo'],
+    INACTIVO:       ['badge-gray',   '○ Inactivo'],
+    NORMAL:         ['badge-blue',   'Normal'],
+    URGENCIA:       ['badge-red',    '🚨 Urgencia'],
+  };
+  const [cls, label] = map[estado] || ['badge-gray', estado];
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+
+function toast(msg, type='info') {
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  el.textContent = msg;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3800);
+}
+
+function openModal(title, bodyHTML) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').innerHTML    = bodyHTML;
+  document.getElementById('modal').classList.remove('hidden');
+}
+
+function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+function closeModalBackdrop(e) { if (e.target.id === 'modal') closeModal(); }
+
+function emptyState(msg) {
+  return `<div class="empty-state"><svg class="mx-auto mb-3 opacity-30" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><p class="text-sm">${msg}</p></div>`;
+}
+
+function inputRow(label, id, placeholder, type='text', extra='') {
+  return `<div class="mb-4">
+    <label class="block text-sm font-medium mb-1.5" style="color:var(--foreground);">${label}</label>
+    <input type="${type}" id="${id}" placeholder="${placeholder}" class="sc-input" ${extra}>
+  </div>`;
+}
+
+function selectRow(label, id, options) {
+  const opts = options.map(([v,l]) => `<option value="${v}">${l}</option>`).join('');
+  return `<div class="mb-4">
+    <label class="block text-sm font-medium mb-1.5" style="color:var(--foreground);">${label}</label>
+    <select id="${id}" class="sc-input">${opts}</select>
+  </div>`;
+}
+
+// ──────────────────────────────────────────────────
+//  CLOCK
+// ──────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleTimeString('es-MX', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ──────────────────────────────────────────────────
+//  DASHBOARD
+// ──────────────────────────────────────────────────
+function dashboard() {
+  const meds     = state.medicamentos.filter(m => m.activo);
+  const pending  = state.solicitudes.filter(s => s.estado === 'PENDIENTE').length;
+  const surtidas = state.solicitudes.filter(s => s.estado === 'SURTIDA').length;
+  const alertas  = meds.filter(m => m.stock_actual < m.stock_objetivo * 0.3).length;
+  const total    = state.solicitudes.length;
+
+  // Recent solicitudes
+  const recent = [...state.solicitudes].reverse().slice(0, 5);
+
+  const kpis = [
+    { label:'Medicamentos Activos', value: meds.length, icon:'💊', color:'#3b82f6', sub:`de ${state.medicamentos.length} registrados` },
+    { label:'Solicitudes Pendientes', value: pending, icon:'⏳', color:'#f59e0b', sub:'Requieren respuesta de farmacia' },
+    { label:'Solicitudes Surtidas', value: surtidas, icon:'✓', color:'#16a34a', sub:`de ${total} totales` },
+    { label:'Alertas de Stock Bajo', value: alertas, icon:'⚠', color:'#ef4444', sub:'Stock < 30% del objetivo' },
+  ];
+
+  const kpiHtml = kpis.map(k => `
+    <div class="kpi-card rounded-2xl p-6 border border-[var(--border)] cursor-default" style="background:var(--card);">
+      <div class="flex items-start justify-between mb-3">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl" style="background:${k.color}22;">${k.icon}</div>
+        <span class="text-3xl font-bold" style="color:${k.color};">${k.value}</span>
+      </div>
+      <p class="font-semibold text-sm" style="color:var(--foreground);">${k.label}</p>
+      <p class="text-xs mt-1" style="color:var(--muted-foreground);">${k.sub}</p>
+    </div>
+  `).join('');
+
+  const recentHtml = recent.length ? recent.map(s => `
+    <tr>
+      <td class="py-3 px-4 font-mono text-sm">${s.folio}</td>
+      <td class="py-3 px-4 text-sm">${s.paciente}</td>
+      <td class="py-3 px-4 text-sm">${s.nombre_medicamento}</td>
+      <td class="py-3 px-4 text-sm">${badge(s.estado)}</td>
+      <td class="py-3 px-4 text-sm">${badge(s.tipo)}</td>
+    </tr>
+  `).join('') : `<tr><td colspan="5">${emptyState('No hay solicitudes registradas aún.')}</td></tr>`;
+
+  // Stock chart bars
+  const stockBars = meds.slice(0,6).map(m => {
+    const pct = m.stock_objetivo > 0 ? Math.min(100, Math.round(m.stock_actual / m.stock_objetivo * 100)) : 0;
+    const color = pct < 30 ? '#ef4444' : pct < 70 ? '#f59e0b' : '#16a34a';
+    return `
+      <div class="mb-3">
+        <div class="flex justify-between text-xs mb-1">
+          <span style="color:var(--foreground);">${m.nombre.substring(0,22)}…</span>
+          <span style="color:var(--muted-foreground);">${m.stock_actual}/${m.stock_objetivo}</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${color};"></div></div>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="grid grid-cols-4 gap-5 mb-8">${kpiHtml}</div>
+
+    <div class="grid grid-cols-3 gap-6">
+      <!-- Recent requests -->
+      <div class="col-span-2 rounded-2xl border border-[var(--border)] overflow-hidden" style="background:var(--card);">
+        <div class="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
+          <h3 class="font-semibold text-sm" style="color:var(--foreground);">Solicitudes Recientes</h3>
+          <button onclick="goTo('solicitudes')" class="text-xs" style="color:var(--primary);">Ver todas →</button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full sc-table">
+            <thead><tr>
+              <th class="py-2.5 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Folio</th>
+              <th class="py-2.5 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Paciente</th>
+              <th class="py-2.5 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Medicamento</th>
+              <th class="py-2.5 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Estado</th>
+              <th class="py-2.5 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Tipo</th>
+            </tr></thead>
+            <tbody>${recentHtml}</tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Stock chart -->
+      <div class="rounded-2xl border border-[var(--border)] p-6" style="background:var(--card);">
+        <h3 class="font-semibold text-sm mb-4 section-header" style="color:var(--foreground);">Nivel de Stock</h3>
+        ${stockBars || emptyState('Sin medicamentos activos.')}
+        <p class="text-xs mt-3" style="color:var(--muted-foreground);">🔴 &lt;30% · 🟡 30-70% · 🟢 &gt;70%</p>
+      </div>
+    </div>`;
+}
+
+// ──────────────────────────────────────────────────
+//  MEDICAMENTOS
+// ──────────────────────────────────────────────────
+function medicamentos() {
+  const rows = state.medicamentos.map(m => `
+    <tr>
+      <td class="py-3 px-4 font-mono text-sm font-semibold" style="color:var(--primary);">${m.clave}</td>
+      <td class="py-3 px-4 text-sm font-medium" style="color:var(--foreground);">${m.nombre}</td>
+      <td class="py-3 px-4 text-sm" style="color:var(--muted-foreground);">${m.presentacion}</td>
+      <td class="py-3 px-4 text-sm" style="color:var(--muted-foreground);">${m.unidad_fisica}</td>
+      <td class="py-3 px-4 text-sm font-semibold">${m.stock_actual}</td>
+      <td class="py-3 px-4 text-sm">${m.stock_objetivo}</td>
+      <td class="py-3 px-4">${badge(m.activo ? 'ACTIVO' : 'INACTIVO')}</td>
+      <td class="py-3 px-4">
+        <div class="flex gap-2">
+          <button onclick="editarMed('${m.clave}')" class="btn btn-secondary btn-sm">Editar</button>
+          ${m.activo
+            ? `<button onclick="desactivarMed('${m.clave}')" class="btn btn-danger btn-sm">Desactivar</button>`
+            : `<button onclick="activarMed('${m.clave}')" class="btn btn-success btn-sm">Activar</button>`
+          }
+        </div>
+      </td>
+    </tr>`).join('') || `<tr><td colspan="8">${emptyState('No hay medicamentos registrados.')}</td></tr>`;
+
+  return `
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h2 class="text-base font-bold" style="color:var(--foreground);">Catálogo de Medicamentos</h2>
+        <p class="text-sm" style="color:var(--muted-foreground);">${state.medicamentos.length} registros · ${state.medicamentos.filter(m=>m.activo).length} activos</p>
+      </div>
+      <button onclick="abrirRegistrarMed()" class="btn btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nuevo Medicamento
+      </button>
+    </div>
+    <div class="rounded-2xl border border-[var(--border)] overflow-hidden" style="background:var(--card);">
+      <div class="overflow-x-auto">
+        <table class="w-full sc-table">
+          <thead><tr>
+            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Clave</th>
+            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Nombre</th>
+            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Presentación</th>
+            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Unidad</th>
+            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Stock Act.</th>
+            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Stock Obj.</th>
+            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Estado</th>
+            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Acciones</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+function abrirRegistrarMed() {
+  openModal('Registrar Nuevo Medicamento', `
+    ${inputRow('Clave (4 dígitos)', 'm-clave', '5121')}
+    ${inputRow('Nombre del Medicamento', 'm-nombre', 'Paracetamol 1 g')}
+    ${inputRow('Presentación', 'm-pres', 'Solucion inyectable')}
+    ${inputRow('Unidad Física', 'm-unidad', 'Ampolleta')}
+    ${inputRow('Stock Actual', 'm-stock-act', '0', 'number')}
+    ${inputRow('Stock Objetivo', 'm-stock-obj', '30', 'number')}
+    <div class="flex gap-3 mt-6">
+      <button onclick="guardarMed()" class="btn btn-primary flex-1">Registrar</button>
+      <button onclick="closeModal()" class="btn btn-secondary">Cancelar</button>
+    </div>`);
+}
+
+function guardarMed() {
+  const clave = fieldVal('m-clave');
+  const nombre = fieldVal('m-nombre');
+  const pres = fieldVal('m-pres');
+  const unidad = fieldVal('m-unidad');
+  const stockAct = fieldVal('m-stock-act');
+  const stockObj = fieldVal('m-stock-obj');
+  let ok = true;
+  if (!RE.clave.test(clave))        { document.getElementById('m-clave').classList.add('error'); ok=false; }
+  if (!RE.nombre.test(nombre))      { document.getElementById('m-nombre').classList.add('error'); ok=false; }
+  if (!RE.presentacion.test(pres))  { document.getElementById('m-pres').classList.add('error'); ok=false; }
+  if (!RE.unidad.test(unidad))      { document.getElementById('m-unidad').classList.add('error'); ok=false; }
+  if (!RE.stock.test(stockAct))     { document.getElementById('m-stock-act').classList.add('error'); ok=false; }
+  if (!RE.stock.test(stockObj))     { document.getElementById('m-stock-obj').classList.add('error'); ok=false; }
+  if (!ok) { toast('Corrija los campos marcados en rojo.', 'error'); return; }
+  if (state.medicamentos.find(m => m.clave === clave)) {
+    toast('La clave ya está registrada.', 'error'); return;
+  }
+  state.medicamentos.push({ clave, nombre, presentacion: pres, unidad_fisica: unidad,
+    stock_actual: parseInt(stockAct), stock_objetivo: parseInt(stockObj), activo: true });
+  saveState(); closeModal(); renderPage('medicamentos');
+  toast('Medicamento registrado correctamente.', 'success');
+}
+
+function editarMed(clave) {
+  const m = state.medicamentos.find(x => x.clave === clave);
+  if (!m) return;
+  openModal(`Editar — ${m.nombre}`, `
+    ${inputRow('Nuevo Nombre', 'e-nombre', m.nombre)}
+    ${inputRow('Nuevo Stock Objetivo', 'e-stock', m.stock_objetivo, 'number')}
+    <input type="hidden" id="e-clave" value="${clave}">
+    <div class="flex gap-3 mt-6">
+      <button onclick="guardarEdicion()" class="btn btn-primary flex-1">Guardar Cambios</button>
+      <button onclick="closeModal()" class="btn btn-secondary">Cancelar</button>
+    </div>`);
+}
+
+function guardarEdicion() {
+  const clave = fieldVal('e-clave');
+  const nombre = fieldVal('e-nombre');
+  const stock = fieldVal('e-stock');
+  let ok = true;
+  if (!RE.nombre.test(nombre))  { document.getElementById('e-nombre').classList.add('error'); ok=false; }
+  if (!RE.stock.test(stock))    { document.getElementById('e-stock').classList.add('error'); ok=false; }
+  if (!ok) { toast('Corrija los campos marcados en rojo.', 'error'); return; }
+  const m = state.medicamentos.find(x => x.clave === clave);
+  m.nombre = nombre; m.stock_objetivo = parseInt(stock);
+  saveState(); closeModal(); renderPage('medicamentos');
+  toast('Medicamento actualizado.', 'success');
+}
+
+function desactivarMed(clave) {
+  const m = state.medicamentos.find(x => x.clave === clave);
+  if (!confirm(`¿Desactivar "${m.nombre}"?`)) return;
+  m.activo = false;
+  saveState(); renderPage('medicamentos');
+  toast('Medicamento desactivado.', 'info');
+}
+
+function activarMed(clave) {
+  const m = state.medicamentos.find(x => x.clave === clave);
+  m.activo = true;
+  saveState(); renderPage('medicamentos');
+  toast('Medicamento activado.', 'success');
+}
+
+// ──────────────────────────────────────────────────
+//  PACIENTES
+// ──────────────────────────────────────────────────
+function pacientes() {
+  return `
+    <div class="max-w-lg mx-auto">
+      <div class="rounded-2xl border border-[var(--border)] p-8" style="background:var(--card);">
+        <h2 class="text-base font-bold mb-1 section-header" style="color:var(--foreground);">Consultar Paciente</h2>
+        <p class="text-sm mb-6" style="color:var(--muted-foreground);">Ingrese servicio y cama para localizar al paciente.</p>
+        ${inputRow('Servicio', 'p-servicio', 'Pediatria')}
+        ${inputRow('Cama', 'p-cama', '01')}
+        <button onclick="buscarPaciente()" class="btn btn-primary w-full mt-2">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Buscar Paciente
+        </button>
+        <div id="p-result" class="mt-6"></div>
+      </div>
+      <div class="mt-6 rounded-2xl border border-[var(--border)] overflow-hidden" style="background:var(--card);">
+        <div class="px-5 py-3 border-b border-[var(--border)]">
+          <h3 class="font-semibold text-sm" style="color:var(--foreground);">Todos los Pacientes Registrados</h3>
+        </div>
+        <table class="w-full sc-table">
+          <thead><tr>
+            <th class="py-2.5 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Servicio</th>
+            <th class="py-2.5 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Cama</th>
+            <th class="py-2.5 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Nombre</th>
+            <th class="py-2.5 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">NSS</th>
+          </tr></thead>
+          <tbody>${state.pacientes.map(p=>`
+            <tr>
+              <td class="py-2.5 px-4 text-sm">${p.servicio}</td>
+              <td class="py-2.5 px-4 text-sm font-mono">${p.cama}</td>
+              <td class="py-2.5 px-4 text-sm font-medium" style="color:var(--foreground);">${p.nombre}</td>
+              <td class="py-2.5 px-4 text-sm font-mono" style="color:var(--muted-foreground);">${p.nss}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+function buscarPaciente() {
+  const serv = fieldVal('p-servicio');
+  const cama = fieldVal('p-cama');
+  let ok = true;
+  if (!RE.servicio.test(serv)) { document.getElementById('p-servicio').classList.add('error'); ok=false; }
+  if (!RE.cama.test(cama))     { document.getElementById('p-cama').classList.add('error'); ok=false; }
+  if (!ok) { toast('Formato inválido.', 'error'); return; }
+  const p = state.pacientes.find(x =>
+    x.servicio.toLowerCase() === serv.toLowerCase() && x.cama === cama);
+  const el = document.getElementById('p-result');
+  if (p) {
+    el.innerHTML = `
+      <div class="rounded-xl border border-green-500 p-5" style="background:color-mix(in srgb,#16a34a 8%,transparent);">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="badge badge-green">Paciente encontrado</span>
+        </div>
+        <div class="grid grid-cols-2 gap-3 text-sm">
+          <div><p class="text-xs mb-0.5" style="color:var(--muted-foreground);">Nombre</p><p class="font-semibold" style="color:var(--foreground);">${p.nombre}</p></div>
+          <div><p class="text-xs mb-0.5" style="color:var(--muted-foreground);">NSS</p><p class="font-mono font-semibold" style="color:var(--foreground);">${p.nss}</p></div>
+          <div><p class="text-xs mb-0.5" style="color:var(--muted-foreground);">Servicio</p><p style="color:var(--foreground);">${p.servicio}</p></div>
+          <div><p class="text-xs mb-0.5" style="color:var(--muted-foreground);">Cama</p><p class="font-mono" style="color:var(--foreground);">${p.cama}</p></div>
+        </div>
+      </div>`;
+  } else {
+    el.innerHTML = `<div class="rounded-xl border border-red-500 p-4" style="background:color-mix(in srgb,#ef4444 8%,transparent);">
+      <p class="text-sm font-medium" style="color:#ef4444;">No se encontró paciente en ${serv} / Cama ${cama}.</p>
+    </div>`;
+  }
+}
+
+// ──────────────────────────────────────────────────
+//  SOLICITUDES
+// ──────────────────────────────────────────────────
+function solicitudes() {
+  const rows = [...state.solicitudes].reverse().map(s => `
+    <tr>
+      <td class="py-3 px-4 font-mono text-sm font-bold" style="color:var(--primary);">${s.folio}</td>
+      <td class="py-3 px-4 text-sm">${s.servicio} / ${s.cama}</td>
+      <td class="py-3 px-4 text-sm" style="color:var(--foreground);">${s.paciente}</td>
+      <td class="py-3 px-4 text-sm">${s.nombre_medicamento}</td>
+      <td class="py-3 px-4 text-sm text-center">${s.cantidad}</td>
+      <td class="py-3 px-4 text-sm text-center">${s.cantidad_recibida}</td>
+      <td class="py-3 px-4">${badge(s.estado)}</td>
+      <td class="py-3 px-4">${badge(s.tipo)}</td>
+      <td class="py-3 px-4 text-sm" style="color:var(--muted-foreground);">${s.turno}</td>
+    </tr>`).join('') || `<tr><td colspan="9">${emptyState('Sin solicitudes registradas.')}</td></tr>`;
+
+  return `
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h2 class="text-base font-bold" style="color:var(--foreground);">Solicitudes</h2>
+        <p class="text-sm" style="color:var(--muted-foreground);">${state.solicitudes.length} registros</p>
+      </div>
+      <button onclick="abrirNuevaSolicitud()" class="btn btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nueva Solicitud
+      </button>
+    </div>
+    <div class="rounded-2xl border border-[var(--border)] overflow-hidden" style="background:var(--card);">
+      <div class="overflow-x-auto">
+        <table class="w-full sc-table">
+          <thead><tr>
+            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Folio</th>
+            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Serv/Cama</th>
+            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Paciente</th>
+            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Medicamento</th>
+            <th class="py-3 px-4 text-center text-xs font-semibold" style="color:var(--muted-foreground);">Sol.</th>
+            <th class="py-3 px-4 text-center text-xs font-semibold" style="color:var(--muted-foreground);">Rec.</th>
+            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Estado</th>
+            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Tipo</th>
+            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Turno</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+function abrirNuevaSolicitud() {
+  const medsActivos = state.medicamentos.filter(m => m.activo);
+  const medOpts = medsActivos.map(m => [m.clave, `${m.nombre} (${m.presentacion})`]);
+  const pacOpts = state.pacientes.map(p => [`${p.servicio}||${p.cama}`, `${p.nombre} — ${p.servicio} / ${p.cama}`]);
+  openModal('Nueva Solicitud', `
+    ${selectRow('Paciente (Servicio / Cama)', 'ns-pac', pacOpts)}
+    ${selectRow('Medicamento', 'ns-med', medOpts)}
+    ${inputRow('Cantidad Solicitada', 'ns-cant', '1', 'number')}
+    ${selectRow('Turno', 'ns-turno', [['MATUTINO','Matutino'],['VESPERTINO','Vespertino'],['NOCTURNO','Nocturno']])}
+    ${inputRow('Usuario Responsable', 'ns-usuario', 'Enf. García')}
+    ${selectRow('Tipo', 'ns-tipo', [['NORMAL','Normal'],['URGENCIA','🚨 Urgencia']])}
+    <div class="flex gap-3 mt-6">
+      <button onclick="guardarSolicitud()" class="btn btn-primary flex-1">Registrar Solicitud</button>
+      <button onclick="closeModal()" class="btn btn-secondary">Cancelar</button>
+    </div>`);
+}
+
+function guardarSolicitud() {
+  const pacKey = fieldVal('ns-pac');
+  const medClave = fieldVal('ns-med');
+  const cant = fieldVal('ns-cant');
+  const turno = fieldVal('ns-turno');
+  const usuario = fieldVal('ns-usuario');
+  const tipo = fieldVal('ns-tipo');
+
+  let ok = true;
+  if (!RE.cantidadPos.test(cant)) { document.getElementById('ns-cant').classList.add('error'); ok=false; }
+  if (!RE.usuario.test(usuario))  { document.getElementById('ns-usuario').classList.add('error'); ok=false; }
+  if (!ok) { toast('Corrija los campos marcados.', 'error'); return; }
+
+  const [serv, cama] = pacKey.split('||');
+  const pac = state.pacientes.find(p => p.servicio === serv && p.cama === cama);
+  const med = state.medicamentos.find(m => m.clave === medClave);
+  if (!pac || !med) { toast('Paciente o medicamento no encontrado.', 'error'); return; }
+
+  const folio = `SOL-${String(state.contador).padStart(4,'0')}`;
+  state.contador++;
+  state.solicitudes.push({
+    folio, servicio: pac.servicio, cama: pac.cama,
+    paciente: pac.nombre, nss: pac.nss,
+    medicamento: med.clave, nombre_medicamento: med.nombre,
+    cantidad: parseInt(cant), cantidad_recibida: 0, cantidad_pendiente: parseInt(cant),
+    turno, usuario, tipo, estado: 'PENDIENTE'
+  });
+  saveState(); closeModal(); renderPage('solicitudes');
+  toast(`Solicitud ${folio} registrada.`, 'success');
+}
+
+// ──────────────────────────────────────────────────
+//  INVENTARIO
+// ──────────────────────────────────────────────────
+function inventario() {
+  const meds = state.medicamentos.filter(m => m.activo);
+  const rows = meds.map(m => {
+    const pct = m.stock_objetivo > 0 ? Math.min(100, Math.round(m.stock_actual/m.stock_objetivo*100)) : 0;
+    const color = pct < 30 ? '#ef4444' : pct < 70 ? '#f59e0b' : '#16a34a';
+    const faltante = Math.max(0, m.stock_objetivo - m.stock_actual);
+    return `
+      <tr>
+        <td class="py-3 px-4 font-mono text-sm font-semibold" style="color:var(--primary);">${m.clave}</td>
+        <td class="py-3 px-4 text-sm font-medium" style="color:var(--foreground);">${m.nombre}</td>
+        <td class="py-3 px-4 text-sm" style="color:var(--muted-foreground);">${m.presentacion}</td>
+        <td class="py-3 px-4 text-sm">${m.unidad_fisica}</td>
+        <td class="py-3 px-4 text-sm font-bold" style="color:${m.stock_actual===0?'#ef4444':color};">${m.stock_actual}</td>
+        <td class="py-3 px-4 text-sm" style="color:var(--muted-foreground);">${m.stock_objetivo}</td>
+        <td class="py-3 px-4 text-sm">${faltante > 0 ? `<span style="color:#f59e0b;font-weight:600;">-${faltante}</span>` : '<span style="color:#16a34a;font-weight:600;">✓</span>'}</td>
+        <td class="py-3 px-4" style="min-width:120px;">
+          <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${color};"></div></div>
+          <p class="text-xs mt-1 font-mono" style="color:var(--muted-foreground);">${pct}%</p>
+        </td>
+      </tr>`;
+  }).join('') || `<tr><td colspan="8">${emptyState('No hay medicamentos activos.')}</td></tr>`;
+
+  return `
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h2 class="text-base font-bold" style="color:var(--foreground);">Inventario Actual</h2>
+        <p class="text-sm" style="color:var(--muted-foreground);">${meds.length} medicamentos activos</p>
+      </div>
+    </div>
+    <div class="rounded-2xl border border-[var(--border)] overflow-hidden" style="background:var(--card);">
+      <div class="overflow-x-auto">
+        <table class="w-full sc-table">
+          <thead><tr>
+            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Clave</th>
+            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Nombre</th>
+            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Presentación</th>
+            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Unidad</th>
+            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Stock Act.</th>
+            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Stock Obj.</th>
+            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Faltante</th>
+            <th class="py-3 px-4 text-left text-xs font-semibold" style="color:var(--muted-foreground);">Cobertura</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+// ──────────────────────────────────────────────────
+//  PROCESAR SOLICITUD
+// ──────────────────────────────────────────────────
+function procesar() {
+  const pendientes = state.solicitudes.filter(s => s.estado === 'PENDIENTE');
+  const opts = pendientes.map(s => [s.folio, `${s.folio} — ${s.nombre_medicamento} × ${s.cantidad} (${s.paciente})`]);
+
+  if (!pendientes.length) {
+    return `<div class="max-w-lg mx-auto">
+      <div class="rounded-2xl border border-[var(--border)] p-8" style="background:var(--card);">
+        ${emptyState('No hay solicitudes pendientes de procesar.')}
+        <div class="text-center mt-4">
+          <button onclick="goTo('solicitudes')" class="btn btn-primary btn-sm">Ver Solicitudes</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  return `
+    <div class="max-w-xl mx-auto">
+      <div class="rounded-2xl border border-[var(--border)] p-8" style="background:var(--card);">
+        <h2 class="text-base font-bold mb-1 section-header" style="color:var(--foreground);">Respuesta de Farmacia</h2>
+        <p class="text-sm mb-6" style="color:var(--muted-foreground);">Seleccione la solicitud y registre la respuesta.</p>
+        ${selectRow('Solicitud Pendiente', 'pr-folio', opts)}
+        <div id="pr-preview" class="mb-5"></div>
+        <div class="grid grid-cols-2 gap-3">
+          <button onclick="responderFarmacia('SURTIDA')" class="btn btn-success w-full">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Surtir Solicitud
+          </button>
+          <button onclick="responderFarmacia('NEGADA')" class="btn btn-danger w-full">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Negar Solicitud
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function attachEvents(page) {
+  if (page === 'procesar') {
+    const sel = document.getElementById('pr-folio');
+    if (sel) {
+      sel.addEventListener('change', previsualizarSolicitud);
+      previsualizarSolicitud();
+    }
+  }
+}
+
+function previsualizarSolicitud() {
+  const folio = document.getElementById('pr-folio')?.value;
+  const sol = state.solicitudes.find(s => s.folio === folio);
+  const el = document.getElementById('pr-preview');
+  if (!sol || !el) return;
+  el.innerHTML = `
+    <div class="rounded-xl border border-[var(--border)] p-4 text-sm" style="background:var(--background);">
+      <div class="grid grid-cols-2 gap-2">
+        <div><span style="color:var(--muted-foreground);">Folio:</span> <strong>${sol.folio}</strong></div>
+        <div><span style="color:var(--muted-foreground);">Paciente:</span> ${sol.paciente}</div>
+        <div><span style="color:var(--muted-foreground);">Medicamento:</span> ${sol.nombre_medicamento}</div>
+        <div><span style="color:var(--muted-foreground);">Cantidad:</span> <strong>${sol.cantidad}</strong></div>
+        <div><span style="color:var(--muted-foreground);">Turno:</span> ${sol.turno}</div>
+        <div><span style="color:var(--muted-foreground);">Tipo:</span> ${badge(sol.tipo)}</div>
+      </div>
+    </div>`;
+}
+
+function responderFarmacia(respuesta) {
+  const folio = fieldVal('pr-folio');
+  if (!RE.folio.test(folio)) { toast('Folio inválido.', 'error'); return; }
+  const sol = state.solicitudes.find(s => s.folio === folio);
+  if (!sol || sol.estado !== 'PENDIENTE') { toast('Solicitud no encontrada o ya procesada.', 'error'); return; }
+  sol.estado = respuesta;
+  saveState(); renderPage('procesar');
+  toast(`Solicitud ${folio} marcada como ${respuesta}.`, respuesta === 'SURTIDA' ? 'success' : 'error');
+}
+
+// ──────────────────────────────────────────────────
+//  RECEPCIÓN FÍSICA
+// ──────────────────────────────────────────────────
+function recepcion() {
+  const surtidas = state.solicitudes.filter(s => s.estado === 'SURTIDA');
+  const opts = surtidas.map(s => [s.folio, `${s.folio} — ${s.nombre_medicamento} × ${s.cantidad}`]);
+
+  if (!surtidas.length) {
+    return `<div class="max-w-lg mx-auto">
+      <div class="rounded-2xl border border-[var(--border)] p-8" style="background:var(--card);">
+        ${emptyState('No hay solicitudes surtidas pendientes de recepción.')}
+        <div class="text-center mt-4">
+          <button onclick="goTo('procesar')" class="btn btn-primary btn-sm">Ir a Procesar</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  return `
+    <div class="max-w-xl mx-auto">
+      <div class="rounded-2xl border border-[var(--border)] p-8" style="background:var(--card);">
+        <h2 class="text-base font-bold mb-1 section-header" style="color:var(--foreground);">Registrar Recepción Física</h2>
+        <p class="text-sm mb-6" style="color:var(--muted-foreground);">Confirme las unidades recibidas físicamente.</p>
+        ${selectRow('Solicitud Surtida', 'rec-folio', opts)}
+        <div id="rec-preview" class="mb-5"></div>
+        ${inputRow('Cantidad Recibida', 'rec-cant', '0', 'number')}
+        <div id="rec-rango" class="text-xs mb-4" style="color:var(--muted-foreground);"></div>
+        <button onclick="registrarRecepcion()" class="btn btn-primary w-full">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Confirmar Recepción
+        </button>
+      </div>
+    </div>`;
+}
+
+function attachRecepcionEvents() {
+  const sel = document.getElementById('rec-folio');
+  if (sel) {
+    sel.addEventListener('change', previsualizarRecepcion);
+    previsualizarRecepcion();
+  }
+}
+
+function previsualizarRecepcion() {
+  const folio = document.getElementById('rec-folio')?.value;
+  const sol = state.solicitudes.find(s => s.folio === folio);
+  const el = document.getElementById('rec-preview');
+  const rng = document.getElementById('rec-rango');
+  if (!sol || !el) return;
+  const med = state.medicamentos.find(m => m.clave === sol.medicamento);
+  el.innerHTML = `
+    <div class="rounded-xl border border-[var(--border)] p-4 text-sm" style="background:var(--background);">
+      <div class="grid grid-cols-2 gap-2">
+        <div><span style="color:var(--muted-foreground);">Folio:</span> <strong>${sol.folio}</strong></div>
+        <div><span style="color:var(--muted-foreground);">Paciente:</span> ${sol.paciente}</div>
+        <div><span style="color:var(--muted-foreground);">Medicamento:</span> ${sol.nombre_medicamento}</div>
+        <div><span style="color:var(--muted-foreground);">Cant. solicitada:</span> <strong>${sol.cantidad}</strong></div>
+        ${med ? `<div><span style="color:var(--muted-foreground);">Stock actual:</span> <strong>${med.stock_actual}</strong></div>` : ''}
+      </div>
+    </div>`;
+  if (rng) rng.textContent = `Ingrese entre 0 y ${sol.cantidad} unidades.`;
+}
+
+function registrarRecepcion() {
+  const folio = document.getElementById('rec-folio')?.value;
+  const cant  = fieldVal('rec-cant');
+  if (!RE.folio.test(folio)) { toast('Folio inválido.', 'error'); return; }
+  if (!RE.cantidadGe0.test(cant)) { document.getElementById('rec-cant').classList.add('error'); toast('Cantidad inválida.', 'error'); return; }
+  const sol = state.solicitudes.find(s => s.folio === folio);
+  if (!sol || sol.estado !== 'SURTIDA') { toast('Solicitud no encontrada o no está SURTIDA.', 'error'); return; }
+  const med = state.medicamentos.find(m => m.clave === sol.medicamento);
+  const recibido = parseInt(cant);
+  if (recibido < 0 || recibido > sol.cantidad) { toast(`La cantidad debe estar entre 0 y ${sol.cantidad}.`, 'error'); return; }
+  const pendiente = sol.cantidad - recibido;
+  sol.cantidad_recibida  = recibido;
+  sol.cantidad_pendiente = pendiente;
+  sol.estado = recibido === 0 ? 'NEGADA' : pendiente > 0 ? 'SURTIDA_PARCIAL' : 'SURTIDA';
+  if (med) med.stock_actual += recibido;
+  saveState(); renderPage('recepcion');
+  toast(`Recepción registrada. Estado: ${sol.estado}. Stock actualizado.`, 'success');
+}
+
+// Attach recepcion events after render
+const _origAttach = attachEvents;
+function attachEvents(page) {
+  _origAttach(page);
+  if (page === 'recepcion') attachRecepcionEvents();
+}
+
+// ──────────────────────────────────────────────────
+//  INIT
+// ──────────────────────────────────────────────────
+goTo('dashboard');
+</script>
+</body>
+</html>

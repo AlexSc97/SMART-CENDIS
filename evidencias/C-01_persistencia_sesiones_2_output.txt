@@ -1,0 +1,83 @@
+=== C-01_persistencia_sesiones_2: Sesión 2: consultar solicitudes (debe mostrar SOL-0001) ===
+Input sequence: '9\n0\n'
+
+
+
+==================================================
+              SMART CENDIS
+==================================================
+Sistema de Gestión Digital de Solicitudes,
+Abastecimiento y Control de Inventario
+==================================================
+
+ 1. Registrar medicamento
+ 2. Consultar medicamentos
+ 3. Modificar medicamento
+ 4. Desactivar medicamento
+ 5. Consultar paciente
+ 6. Registrar solicitud
+ 7. Procesar solicitud
+ 8. Registrar recepción
+ 9. Consultar solicitudes
+10. Consultar inventario
+11. Limpiar historial de solicitudes
+ 0. Salir
+==================================================
+Seleccione una opción: 
+========== SOLICITUDES REGISTRADAS ==========
+--------------------------------------------------
+Folio: SOL-0001
+Servicio: Pediatria
+Cama: 01
+Paciente: Paciente de prueba 001
+Medicamento: Paracetamol 1 g
+Cantidad solicitada: 5
+Cantidad recibida: 5
+Cantidad pendiente: 0
+Estado: SURTIDA
+--------------------------------------------------
+Folio: SOL-0002
+Servicio: Pediatria
+Cama: 01
+Paciente: Paciente de prueba 001
+Medicamento: Paracetamol 1 g
+Cantidad solicitada: 5
+Cantidad recibida: 0
+Cantidad pendiente: 5
+Estado: PENDIENTE
+--------------------------------------------------
+
+Presione ENTER para continuar...
+
+==================================================
+              SMART CENDIS
+==================================================
+Sistema de Gestión Digital de Solicitudes,
+Abastecimiento y Control de Inventario
+==================================================
+
+ 1. Registrar medicamento
+ 2. Consultar medicamentos
+ 3. Modificar medicamento
+ 4. Desactivar medicamento
+ 5. Consultar paciente
+ 6. Registrar solicitud
+ 7. Procesar solicitud
+ 8. Registrar recepción
+ 9. Consultar solicitudes
+10. Consultar inventario
+11. Limpiar historial de solicitudes
+ 0. Salir
+==================================================
+Seleccione una opción: 
+--- STDERR ---
+Traceback (most recent call last):
+  File "C:\Users\Asjer\OneDrive\Desktop\Laboratorio\smartCendis_v3.py", line 1425, in <module>
+    menu_principal()
+  File "C:\Users\Asjer\OneDrive\Desktop\Laboratorio\smartCendis_v3.py", line 1382, in menu_principal
+    opcion = leer_con_patron(
+             ^^^^^^^^^^^^^^^^
+  File "C:\Users\Asjer\OneDrive\Desktop\Laboratorio\smartCendis_v3.py", line 149, in leer_con_patron
+    entrada = input(prompt).strip()
+              ^^^^^^^^^^^^^
+EOFError: EOF when reading a line
