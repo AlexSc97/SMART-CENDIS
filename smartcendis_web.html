@@ -194,7 +194,7 @@
           <p class="font-extrabold text-sm leading-tight text-[#0f172a] tracking-tight">SMART CENDIS</p>
           <p class="text-xs text-[#64748b] font-medium">Gestión Hospitalaria</p>
         </div>
-        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0 ml-auto" title="Sistema en Línea"></span>
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0 ml-auto" title="🟢 Demo operativa — Modo demostración local (localStorage)"></span>
       </div>
     </div>
 
@@ -244,8 +244,9 @@
 
     <!-- Pie del Sidebar -->
     <div class="px-5 py-4 border-t border-[#cbd5e1] bg-[#f8fafc]">
-      <p class="text-xs font-semibold text-[#0f172a]">SMART CENDIS v3.1</p>
-      <p class="text-xs text-[#64748b]">Etapa 3 — Auditoría & Colectivos</p>
+      <p class="text-xs font-semibold text-[#0f172a]">SMART CENDIS — Web Beta</p>
+      <p class="text-xs text-[#64748b]">Interfaz gráfica de demostración · Etapa 3</p>
+      <p class="text-[10px] text-[#94a3b8] mt-1.5 leading-tight">🟢 Demo operativa · localStorage<br>Núcleo Python v3.0.0 separado</p>
     </div>
   </aside>
 
@@ -333,30 +334,90 @@ const INITIAL_STATE = {
   contador_colectivos: 1
 };
 
-let state = loadState();
+// ──────────────────────────────────────────────────
+//  PERSISTENCIA ROBUSTA — Cambios 4, 5, 6 (Etapa 3)
+//  Filosofía idéntica al núcleo Python v3.0.0:
+//  - Recuperación explícita ante datos corruptos
+//  - guardarEstadoSeguro() con try/catch centralizado
+//  - Rollback ante fallo de almacenamiento
+// ──────────────────────────────────────────────────
 
+/**
+ * CAMBIO 6: Carga el estado desde localStorage con recuperación explícita.
+ * Si los datos están corruptos o la estructura es inválida, informa al usuario
+ * y carga el estado demo en lugar de fallar silenciosamente.
+ */
 function loadState() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) {
+    // Primera ejecución — no hay datos previos, es normal
+    return JSON.parse(JSON.stringify(INITIAL_STATE));
+  }
+  let parsed;
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (!parsed.colectivos) parsed.colectivos = [];
-      if (!parsed.contador_colectivos) parsed.contador_colectivos = 1;
-      return parsed;
-    }
-  } catch(e) {}
-  return JSON.parse(JSON.stringify(INITIAL_STATE));
+    parsed = JSON.parse(raw);
+  } catch(e) {
+    // CAMBIO 6: Datos corruptos detectados — informar y cargar estado demo
+    console.warn('[SMART CENDIS] localStorage con datos inválidos. Se carga estado demo.', e);
+    setTimeout(() => {
+      toast('⚠ No fue posible recuperar los datos locales. Se cargó el estado de demostración.', 'error');
+    }, 600);
+    localStorage.removeItem(STORAGE_KEY);
+    return JSON.parse(JSON.stringify(INITIAL_STATE));
+  }
+  // CAMBIO 6: Validar estructura mínima requerida
+  if (!parsed || typeof parsed !== 'object' ||
+      !Array.isArray(parsed.medicamentos) ||
+      !Array.isArray(parsed.solicitudes)) {
+    console.warn('[SMART CENDIS] Estructura de datos inválida. Se carga estado demo.');
+    setTimeout(() => {
+      toast('⚠ Estructura de datos local inválida. Se cargó el estado de demostración.', 'error');
+    }, 600);
+    localStorage.removeItem(STORAGE_KEY);
+    return JSON.parse(JSON.stringify(INITIAL_STATE));
+  }
+  // Migración de campos faltantes (compatibilidad hacia adelante)
+  if (!parsed.colectivos)           parsed.colectivos = [];
+  if (!parsed.contador_colectivos)  parsed.contador_colectivos = 1;
+  if (!parsed.pacientes)            parsed.pacientes = JSON.parse(JSON.stringify(INITIAL_STATE.pacientes));
+  return parsed;
 }
 
+let state = loadState();
+
+/**
+ * CAMBIO 4: Función centralizada de persistencia con manejo de excepciones.
+ * Sustituye el uso directo de localStorage.setItem() en toda la aplicación.
+ * @returns {boolean} true si el guardado fue exitoso, false si ocurrió un error.
+ */
+function guardarEstadoSeguro() {
+  try {
+    const json = JSON.stringify(state);
+    localStorage.setItem(STORAGE_KEY, json);
+    return true;
+  } catch(e) {
+    console.error('[SMART CENDIS] Error al guardar estado en localStorage:', e);
+    toast('⚠ Error al guardar los datos. Los cambios no fueron persistidos.', 'error');
+    return false;
+  }
+}
+
+// Alias de compatibilidad — saveState() delega a guardarEstadoSeguro()
 function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  return guardarEstadoSeguro();
 }
 
 function resetData() {
-  if (!confirm('¿Reiniciar todos los datos al estado institucional de prueba?')) return;
+  if (!confirm('¿Reiniciar todos los datos al estado de demostración?')) return;
+  // CAMBIO 5: Rollback si falla el guardado
+  const anterior = JSON.stringify(state);
   state = JSON.parse(JSON.stringify(INITIAL_STATE));
-  saveState();
-  toast('Datos reiniciados correctamente.', 'success');
+  if (!guardarEstadoSeguro()) {
+    state = JSON.parse(anterior);
+    toast('No se pudo reiniciar. El estado anterior fue restaurado.', 'error');
+    return;
+  }
+  toast('Datos reiniciados al estado de demostración.', 'success');
   renderPage(currentPage);
 }
 
@@ -429,8 +490,8 @@ function badge(estado) {
     INACTIVO:                   ['badge-gray',   '○ Inactivo'],
     NORMAL:                     ['badge-blue',   'Normal'],
     URGENCIA:                   ['badge-red',    '🚨 Urgencia'],
-    TRANSMITIDO:                ['badge-purple', '📡 Transmitido a Farmacia'],
-    ENVIADO_FARMACIA:           ['badge-purple', '📡 En Cola de Farmacia'],
+    TRANSMITIDO:                ['badge-purple', '📋 Registrado para Farmacia'],
+    ENVIADO_FARMACIA:           ['badge-purple', '📋 Preparado para Farmacia'],
     ENTREGADO_FARMACIA:         ['badge-green',  '📦 Recibido en CENDIS']
   };
   const [cls, label] = map[estado] || ['badge-gray', estado];
@@ -687,6 +748,8 @@ function guardarSolicitud() {
 
   const folio = `SOL-${String(state.contador).padStart(4,'0')}`;
   state.contador++;
+  // CAMBIO 5: Guardar estado anterior para rollback
+  const estadoAnteriorSol = JSON.stringify(state);
   state.solicitudes.push({
     folio, servicio: pac.servicio, cama: pac.cama,
     paciente: pac.nombre, nss: pac.nss,
@@ -694,7 +757,13 @@ function guardarSolicitud() {
     cantidad: parseInt(cant), cantidad_recibida: 0, cantidad_pendiente: parseInt(cant),
     turno, usuario, tipo, estado: 'PENDIENTE'
   });
-  saveState(); closeModal(); renderPage('solicitudes');
+  if (!guardarEstadoSeguro()) {
+    // CAMBIO 5: Rollback — la solicitud NO queda registrada
+    state = JSON.parse(estadoAnteriorSol);
+    toast('Error al persistir la solicitud. Operación revertida.', 'error');
+    return;
+  }
+  closeModal(); renderPage('solicitudes');
   toast(`Solicitud de piso ${folio} registrada en CENDIS.`, 'success');
 }
 
@@ -815,7 +884,7 @@ function abrirGenerarColectivo() {
     <div class="flex gap-3 pt-4 border-t border-[#cbd5e1]">
       <button onclick="transmitirColectivo()" class="btn btn-purple flex-1 font-bold shadow-sm">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        Transmitir y Generar Formato Oficial
+        Registrar Pedido y Generar Formato Oficial
       </button>
       <button onclick="closeModal()" class="btn btn-secondary">Cancelar</button>
     </div>`);
@@ -827,16 +896,38 @@ function transmitirColectivo() {
   const resp = fieldVal('col-resp');
   const prioridad = fieldVal('col-prioridad');
 
-  if (!resp || resp.length < 3) {
-    toast('Ingrese el nombre del responsable de CENDIS.', 'error');
+  // CAMBIO 9: Validaciones reforzadas del pedido colectivo
+  if (!resp || resp.trim().length < 2) {
+    toast('El nombre del responsable es obligatorio.', 'error');
+    document.getElementById('col-resp')?.classList.add('error');
     return;
   }
+  if (!RE.usuario.test(resp)) {
+    toast('El nombre del responsable tiene un formato inválido.', 'error');
+    document.getElementById('col-resp')?.classList.add('error');
+    return;
+  }
+  const turnosValidos    = ['MATUTINO', 'VESPERTINO', 'NOCTURNO'];
+  const prioridadesValidas = ['PROGRAMADO', 'CRITICO', 'URGENTE'];
+  if (!turnosValidos.includes(turno)) {
+    toast('Turno seleccionado inválido.', 'error'); return;
+  }
+  if (!prioridadesValidas.includes(prioridad)) {
+    toast('Prioridad seleccionada inválida.', 'error'); return;
+  }
 
-  // Recolectar items
+  // CAMBIO 9: Recolectar items con validación de cantidades (enteros >= 0)
   const items = [];
+  let cantidadInvalida = false;
   state.medicamentos.filter(m => m.activo).forEach(m => {
     const input = document.getElementById(`col-cant-${m.clave}`);
-    const cant = parseInt(input?.value || '0');
+    const rawVal = (input?.value ?? '0').trim();
+    if (!RE.cantidadGe0.test(rawVal)) {
+      cantidadInvalida = true;
+      input?.classList.add('error');
+      return;
+    }
+    const cant = parseInt(rawVal);
     if (cant > 0) {
       items.push({
         clave: m.clave,
@@ -850,6 +941,11 @@ function transmitirColectivo() {
     }
   });
 
+  // CAMBIO 9: Verificar si alguna cantidad fue rechazada por formato inválido
+  if (cantidadInvalida) {
+    toast('Corrija las cantidades marcadas en rojo (deben ser enteros ≥ 0).', 'error');
+    return;
+  }
   if (items.length === 0) {
     toast('Debe solicitar al menos una unidad de algún medicamento.', 'error');
     return;
@@ -869,14 +965,18 @@ function transmitirColectivo() {
     prioridad,
     items,
     estado: 'ENVIADO_FARMACIA',
-    api_ack: `ACK-HTTP200-${Math.random().toString(36).substring(2, 9).toUpperCase()}`
+    ref_local: `REG-LOCAL-${Math.random().toString(36).substring(2, 9).toUpperCase()}`
   };
 
+  // CAMBIO 5: Guardar estado anterior para rollback
+  const estadoAnteriorCol = JSON.stringify(state);
   state.colectivos.push(nuevoColectivo);
-  saveState();
-
-  toast(`Pedido Colectivo ${folio} transmitido vía API a Farmacia Central.`, 'success');
-
+  if (!guardarEstadoSeguro()) {
+    state = JSON.parse(estadoAnteriorCol);
+    toast('Error al registrar el pedido colectivo. Operación revertida.', 'error');
+    return;
+  }
+  toast(`Pedido Colectivo ${folio} registrado. Formato físico listo para Farmacia Central.`, 'success');
   // Mostrar el formato oficial impreso/visualizable
   verFormatoColectivo(folio);
 }
@@ -929,8 +1029,8 @@ function verFormatoColectivo(folio) {
         <div><strong class="text-[#475569]">Destino:</strong> <span class="font-bold text-[#0f172a]">${col.destino}</span></div>
         <div><strong class="text-[#475569]">Personal Responsable CENDIS:</strong> <span class="font-bold text-[#0f172a]">${col.responsable}</span></div>
         <div><strong class="text-[#475569]">Turno:</strong> <span class="font-bold text-[#0f172a]">${col.turno}</span> (${col.prioridad})</div>
-        <div><strong class="text-[#475569]">Estado del Pedido:</strong> <span class="font-bold text-purple-700">Transmitido Electrónicamente</span></div>
-        <div><strong class="text-[#475569]">Transmisión API:</strong> <span class="font-mono text-emerald-700 font-bold">${col.api_ack}</span></div>
+        <div><strong class="text-[#475569]">Estado del Pedido:</strong> <span class="font-bold text-purple-700">Registrado — Formato físico listo para Farmacia Central</span></div>
+        <div><strong class="text-[#475569]">Ref. Registro Local:</strong> <span class="font-mono text-emerald-700 font-bold">${col.ref_local}</span></div>
       </div>
 
       <!-- AVISO NORMATIVO FÍSICO DESTACADO -->
@@ -938,7 +1038,7 @@ function verFormatoColectivo(folio) {
         <span class="text-base">📢</span>
         <div>
           <strong class="font-black uppercase tracking-wide">Instrucción Normativa y Operativa Obligatoria:</strong><br>
-          Este pedido colectivo ha sido registrado exitosamente en el sistema digital y transmitido a la cola de Farmacia Central. Sin embargo, conforme a la normativa hospitalaria vigente, <strong>debe IMPRIMIRSE este formato físico y presentarse con firmas autógrafas ante la ventanilla de Farmacia Central</strong> para la dispensación física de los insumos.
+          Este pedido colectivo ha sido registrado exitosamente en el sistema local. Conforme a la normativa hospitalaria vigente, <strong>debe IMPRIMIRSE este formato físico y presentarse con firmas autógrafas ante la ventanilla de Farmacia Central</strong> para la dispensación física de los insumos. <em>Nota: La integración API con Farmacia Central está prevista como evolución futura del sistema.</em>
         </div>
       </div>
 
@@ -994,7 +1094,7 @@ function verFormatoColectivo(folio) {
         🖨️ Imprimir Formato Físico
       </button>
       <button onclick="verPayloadJson('${col.folio}')" class="btn btn-secondary text-xs">
-        API Payload (JSON)
+        Ver Datos Locales (JSON)
       </button>
       <button onclick="closeModal()" class="btn btn-secondary">Cerrar</button>
     </div>
@@ -1004,7 +1104,7 @@ function verFormatoColectivo(folio) {
 function verPayloadJson(folio) {
   const col = state.colectivos.find(c => c.folio === folio);
   if (!col) return;
-  alert(`PAYLOAD API INSTITUCIONAL (Simulada):\n\nPOST /api/v1/farmacia/pedidos-colectivos\n` + JSON.stringify(col, null, 2));
+  alert(`REGISTRO LOCAL DEL PEDIDO COLECTIVO (formato JSON):\n\nNota: Esta es la representación interna de la beta.\nLa integración API con Farmacia Central es una evolución futura.\n\n` + JSON.stringify(col, null, 2));
 }
 
 // ──────────────────────────────────────────────────
@@ -1099,9 +1199,16 @@ function guardarMed() {
   if (state.medicamentos.find(m => m.clave === clave)) {
     toast('La clave institucional ya se encuentra registrada.', 'error'); return;
   }
+  // CAMBIO 5: Guardar estado anterior para rollback
+  const estadoAnteriorMed = JSON.stringify(state);
   state.medicamentos.push({ clave, nombre, presentacion: pres, unidad_fisica: unidad,
     stock_actual: parseInt(stockAct), stock_objetivo: parseInt(stockObj), activo: true });
-  saveState(); closeModal(); renderPage('medicamentos');
+  if (!guardarEstadoSeguro()) {
+    state = JSON.parse(estadoAnteriorMed);
+    toast('Error al registrar medicamento. Operación revertida.', 'error');
+    return;
+  }
+  closeModal(); renderPage('medicamentos');
   toast('Medicamento registrado en catálogo correctamente.', 'success');
 }
 
@@ -1127,23 +1234,44 @@ function guardarEdicion() {
   if (!RE.stock.test(stock))    { document.getElementById('e-stock').classList.add('error'); ok=false; }
   if (!ok) { toast('Verifique los campos con error.', 'error'); return; }
   const m = state.medicamentos.find(x => x.clave === clave);
+  // CAMBIO 5: Guardar estado anterior para rollback
+  const estadoAnteriorEdit = JSON.stringify(state);
   m.nombre = nombre; m.stock_objetivo = parseInt(stock);
-  saveState(); closeModal(); renderPage('medicamentos');
+  if (!guardarEstadoSeguro()) {
+    state = JSON.parse(estadoAnteriorEdit);
+    toast('Error al modificar medicamento. Operación revertida.', 'error');
+    return;
+  }
+  closeModal(); renderPage('medicamentos');
   toast('Medicamento actualizado exitosamente.', 'success');
 }
 
 function desactivarMed(clave) {
   const m = state.medicamentos.find(x => x.clave === clave);
   if (!confirm(`¿Confirmar baja lógica de "${m.nombre}"?`)) return;
+  // CAMBIO 5: Rollback si falla el guardado
+  const estadoAnteriorDesact = JSON.stringify(state);
   m.activo = false;
-  saveState(); renderPage('medicamentos');
+  if (!guardarEstadoSeguro()) {
+    state = JSON.parse(estadoAnteriorDesact);
+    toast('Error al desactivar medicamento. Operación revertida.', 'error');
+    return;
+  }
+  renderPage('medicamentos');
   toast('Medicamento desactivado del catálogo.', 'info');
 }
 
 function activarMed(clave) {
   const m = state.medicamentos.find(x => x.clave === clave);
+  // CAMBIO 5: Rollback si falla el guardado
+  const estadoAnteriorActiv = JSON.stringify(state);
   m.activo = true;
-  saveState(); renderPage('medicamentos');
+  if (!guardarEstadoSeguro()) {
+    state = JSON.parse(estadoAnteriorActiv);
+    toast('Error al activar medicamento. Operación revertida.', 'error');
+    return;
+  }
+  renderPage('medicamentos');
   toast('Medicamento reactivado.', 'success');
 }
 
@@ -1324,6 +1452,8 @@ function attachEvents(page) {
       sel.addEventListener('change', previsualizarSolicitud);
       previsualizarSolicitud();
     }
+  } else if (page === 'recepcion') {
+    attachRecepcionEvents();
   }
 }
 
@@ -1350,9 +1480,16 @@ function responderFarmacia(respuesta) {
   if (!RE.folio.test(folio)) { toast('Folio inválido.', 'error'); return; }
   const sol = state.solicitudes.find(s => s.folio === folio);
   if (!sol || sol.estado !== 'PENDIENTE') { toast('Solicitud no encontrada o ya procesada.', 'error'); return; }
+  // CAMBIO 5: Rollback si falla el guardado del dictamen
+  const estadoAnteriorResp = JSON.stringify(state);
   sol.estado = respuesta;
-  saveState(); renderPage('procesar');
-  toast(`Solicitud ${folio} actualizada como ${respuesta}.`, respuesta === 'SURTIDA' ? 'success' : 'error');
+  if (!guardarEstadoSeguro()) {
+    state = JSON.parse(estadoAnteriorResp);
+    toast('Error al guardar el dictamen. Operación revertida.', 'error');
+    return;
+  }
+  renderPage('procesar');
+  toast(`Solicitud ${folio} dictaminada como ${respuesta}.`, respuesta === 'SURTIDA' ? 'success' : 'error');
 }
 
 // ──────────────────────────────────────────────────
@@ -1428,21 +1565,51 @@ function registrarRecepcion() {
   const med = state.medicamentos.find(m => m.clave === sol.medicamento);
   const recibido = parseInt(cant);
   if (recibido < 0 || recibido > sol.cantidad) { toast(`La cantidad debe estar entre 0 y ${sol.cantidad}.`, 'error'); return; }
+  // CAMBIO 5: Guardar estado ANTES de modificar inventario (operación crítica)
+  // CAMBIO 7/8: Solo la recepción física modifica el inventario — nunca la solicitud
+  const estadoAnteriorRec = JSON.stringify(state);
   const pendiente = sol.cantidad - recibido;
   sol.cantidad_recibida  = recibido;
   sol.cantidad_pendiente = pendiente;
   sol.estado = recibido === 0 ? 'NEGADA' : pendiente > 0 ? 'SURTIDA_PARCIAL' : 'SURTIDA';
-  if (med) med.stock_actual += recibido;
-  saveState(); renderPage('recepcion');
-  toast(`Recepción registrada (${sol.estado}). Stock actualizado.`, 'success');
+  if (med) med.stock_actual += recibido;   // Inventario actualizado SOLO por recepción física
+  if (!guardarEstadoSeguro()) {
+    // CAMBIO 5: Rollback completo — el inventario NO queda modificado parcialmente
+    state = JSON.parse(estadoAnteriorRec);
+    toast('Error al guardar la recepción. El inventario NO fue modificado (rollback aplicado).', 'error');
+    return;
+  }
+  renderPage('recepcion');
+  toast(`Recepción física registrada (${sol.estado}). Stock CENDIS actualizado.`, 'success');
 }
 
-// Vinculación de eventos al renderizar
-const _origAttach = attachEvents;
-function attachEvents(page) {
-  _origAttach(page);
-  if (page === 'recepcion') attachRecepcionEvents();
-}
+// Nota: Eventos unificados en attachEvents() sin recursión
+
+// ──────────────────────────────────────────────────
+//  LIMITACIONES ACTUALES DE LA BETA WEB (Cambio 15)
+//  Estas limitaciones son decisiones de alcance,
+//  no fallas del sistema.
+// ──────────────────────────────────────────────────
+/*
+ * SMART CENDIS — Web Beta · Limitaciones declaradas:
+ *
+ * 1. La beta utiliza localStorage del navegador (no base de datos real).
+ * 2. No existe backend institucional ni servidor de aplicación.
+ * 3. No existe conexión con sistemas IMSS ni con sistemas institucionales.
+ * 4. No existe API real con Farmacia Central
+ *    (prevista como evolución futura — Etapa 1 del proyecto).
+ * 5. Los datos utilizados son datos de prueba/demostración,
+ *    no datos reales de pacientes.
+ * 6. La integración con sistemas institucionales está planteada
+ *    para una futura etapa de evolución (definida en Etapa 1).
+ * 7. El formato físico es el mecanismo de comunicación con Farmacia
+ *    establecido para la primera versión del sistema (Etapa 1).
+ * 8. Esta interfaz web es un PROTOTIPO COMPLEMENTARIO al núcleo Python v3.0.0;
+ *    no lo reemplaza. Ambos respetan las mismas reglas de negocio:
+ *    - La solicitud NO modifica el inventario.
+ *    - Solo la recepción física actualiza el stock CENDIS.
+ *    - La respuesta de Farmacia y la recepción física son pasos separados.
+ */
 
 // ──────────────────────────────────────────────────
 //  INICIALIZACIÓN
